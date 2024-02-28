@@ -18,7 +18,8 @@ struct GlobalDescriptorTable global_descriptor_table = {
             .is_present = 0,
             .is_64bit_segment = 0,
             .default_op_size = 0,
-            .granularity = 0
+            .granularity = 0,
+            .base_high = 0
         },
         {
             // Kernel code segment
@@ -32,6 +33,7 @@ struct GlobalDescriptorTable global_descriptor_table = {
             .is_64bit_segment = 0,
             .default_op_size = 1,
             .granularity = 1
+            .base_high = 0
         },
         {
             // Kernel data segment
@@ -44,7 +46,8 @@ struct GlobalDescriptorTable global_descriptor_table = {
             .is_present = 1,
             .is_64bit_segment = 0,
             .default_op_size = 1,
-            .granularity = 1
+            .granularity = 1,
+            .base_high = 0
         }
     }
 };

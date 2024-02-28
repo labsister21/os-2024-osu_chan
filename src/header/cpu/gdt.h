@@ -40,6 +40,7 @@ struct SegmentDescriptor {
     uint8_t is_64bit_segment : 1; // l
     uint8_t default_op_size : 1; // D/B
     uint8_t granularity : 1; // G
+    uint8_t base_high; 
 } __attribute__((packed));
 
 /**
