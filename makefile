@@ -23,7 +23,7 @@ IO_FLAG = -A os -input-charset utf8 -quiet -boot-info-table	-o $(OUTPUT_FOLDER)/
 
 
 run: all
-	@qemu-system-i386 -s -S -cdrom $(OUTPUT_FOLDER)/$(ISO_NAME).iso
+	@qemu-system-i386 -s -cdrom $(OUTPUT_FOLDER)/$(ISO_NAME).iso
 all: build
 build: iso
 clean:
@@ -37,7 +37,7 @@ kernel:
 	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/gdt.c -o $(OUTPUT_FOLDER)/gdt.o
 	@$(LIN) $(LFLAGS) bin/*.o -o $(OUTPUT_FOLDER)/kernel
 	@echo Linking object files and generate elf32...
-	@rm -f *.o
+	@rm -f $(OUTPUT_FOLDER)/*.o
 
 iso: kernel
 	@mkdir -p $(OUTPUT_FOLDER)/iso/boot/grub
