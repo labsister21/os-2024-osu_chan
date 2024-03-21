@@ -23,7 +23,7 @@ struct GlobalDescriptorTable global_descriptor_table = {
         },
         {
             // Kernel code segment
-            .segment_low = 0xFFFFF,
+            .segment_low = 0xFFFF,
             .base_low = 0,
             .base_mid = 0,
             .type_bit = 0xA,
@@ -37,7 +37,7 @@ struct GlobalDescriptorTable global_descriptor_table = {
         },
         {
             // Kernel data segment
-            .segment_low = 0xFFFFF,
+            .segment_low = 0xFFFF,
             .base_low = 0,
             .base_mid = 0,
             .type_bit = 0x2,
