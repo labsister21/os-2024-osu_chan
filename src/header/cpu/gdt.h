@@ -32,17 +32,17 @@ struct SegmentDescriptor
     uint16_t base_low;    // base address
 
     // Next 32-bit (Bit 32 to 64)
-    uint8_t base_mid;               
-    uint8_t type_bit : 4;           
-    uint8_t non_system : 1;         
-    uint8_t privilege_level : 2;    
-    uint8_t is_present : 1;         
-    uint8_t segment_limit : 4;      
-    uint8_t usable_by_software : 1; 
-    uint8_t is_64bit_segment : 1;   
-    uint8_t default_op_size : 1;    
-    uint8_t granularity : 1;        
-    uint8_t base_high;            
+    uint8_t base_mid;
+    uint8_t type_bit : 4;
+    uint8_t non_system : 1;
+    uint8_t privilege_level : 2;
+    uint8_t is_present : 1;
+    uint8_t segment_limit : 4;
+    uint8_t usable_by_software : 1;
+    uint8_t is_64bit_segment : 1;
+    uint8_t default_op_size : 1;
+    uint8_t granularity : 1;
+    uint8_t base_high;
 } __attribute__((packed));
 /**
  * Global Descriptor Table containing list of segment descriptor. One GDT already defined in memory.c.
