@@ -7,27 +7,26 @@
 
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
 {
-    outb(0x3D4, 0x0A);
-    outb(0x3D5, (inb(0x3D5) & 0xC0) | cursor_start);
+    out(0x3D4, 0x0A);
+    out(0x3D5, (in(0x3D5) & 0xC0) | cursor_start);
 
-    outb(0x3D4, 0x0B);
-    outb(0x3D5, (inb(0x3D5) & 0xE0) | cursor_end);
+    out(0x3D4, 0x0B);
+    out(0x3D5, (in(0x3D5) & 0xE0) | cursor_end);
 }
 
 void disable_cursor()
 {
-    outb(0x3D4, 0x0A);
-    outb(0x3D5, 0x20);
+    out(0x3D4, 0x0A);
+    out(0x3D5, 0x20);
 }
-
 
 uint16_t get_cursor_position(void)
 {
     uint16_t pos = 0;
-    outb(0x3D4, 0x0F);
-    pos |= inb(0x3D5);
-    outb(0x3D4, 0x0E);
-    pos |= ((uint16_t)inb(0x3D5)) << 8;
+    out(0x3D4, 0x0F);
+    pos |= in(0x3D5);
+    out(0x3D4, 0x0E);
+    pos |= ((uint16_t)in(0x3D5)) << 8;
     return pos;
 }
 
@@ -43,5 +42,5 @@ void framebuffer_write(uint8_t row, uint8_t col, char c, uint8_t fg, uint8_t bg)
 
 void framebuffer_clear(void)
 {
-    // TODO : Implement
+    // TODO : Implement -
 }
