@@ -1,5 +1,15 @@
 #include "header/interrupt/idt.h"
 
+struct InterruptDescriptorTable interrupt_descriptor_table = {
+    .table = {
+
+    },
+};
+
+struct IDTR _idt_idtr = {
+    .size = sizeof(interrupt_descriptor_table),
+    .address = &interrupt_descriptor_table,
+};
 
 void initialize_idt(void)
 {
