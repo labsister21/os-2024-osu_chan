@@ -34,12 +34,13 @@ struct IDTGate
 {
     uint16_t offset_low;
     uint16_t segment;
-    uint8_t _reserved;
-    uint8_t _r_bit_1;
-    uint8_t _r_bit_2;
-    uint8_t gate_32;
-    uint8_t _r_bit_3;
-    uint16_t offset_high;
+    uint8_t _reserved : 5;
+    uint8_t _r_bit_1 : 3;
+    uint8_t _r_bit_2 : 3;
+    uint8_t gate_32 : 1;
+    uint8_t _r_bit_3 : 1;
+    uint8_t valid_bit;
+    uint16_t offset_high;   
 } __attribute__((packed));
 /**
  * Interrupt Descriptor Table, containing lists of IDTGate.
