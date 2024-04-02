@@ -23,8 +23,14 @@ void initialize_idt(void)
      * Segment: GDT_KERNEL_CODE_SEGMENT_SELECTOR
      * Privilege: 0
      */
+
+
     __asm__ volatile("lidt %0" : : "m"(_idt_idtr));
     __asm__ volatile("sti");
+    for (int i = 0; i < ISR_STUB_TABLE_LIMIT; i++)
+    {
+        set_interrupt_gate(i, isr_stub_table[i], GDT_KERNEL_CODE_SEGMENT_SELECTOR, 0);
+    }
 }
 
 void set_interrupt_gate(
@@ -43,4 +49,15 @@ void set_interrupt_gate(
     idt_int_gate->_r_bit_3 = INTERRUPT_GATE_R_BIT_3;
     idt_int_gate->gate_32 = 1;
     idt_int_gate->valid_bit = 1;
+
+
+    uint16_t lower = (uint32_t)handler_address & 0xFFFF;
+    uint16_t higher = ((uint32_t)handler_address) >> 16 & 0xFFFF;
+
+    idt_int_gate->offset_low = lower;
+    idt_int_gate->offset_high = higher;
+
+    idt_int_gate->privilege = privilege;
+    idt_int_gate->segment = gdt_seg_selector;
+
 }

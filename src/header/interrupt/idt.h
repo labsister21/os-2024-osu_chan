@@ -17,6 +17,10 @@ extern void *isr_stub_table[ISR_STUB_TABLE_LIMIT];
 
 extern struct IDTR _idt_idtr;
 
+/*Ini mirip kayak yang GDT harusnya, aman kah???*/
+#define GDT_KERNEL_CODE_SEGMENT_SELECTOR 0x8
+#define GDT_KERNEL_DATA_SEGMENT_SELECTOR 0x10
+
 /**
  * IDTGate, IDT entry that point into interrupt handler
  * Struct defined exactly in Intel x86 Vol 3a - Figure 6-2. IDT Gate Descriptors
@@ -39,48 +43,49 @@ struct IDTGate
     uint8_t _r_bit_2 : 3;
     uint8_t gate_32 : 1;
     uint8_t _r_bit_3 : 1;
-    uint8_t valid_bit;
+    uint8_t privilege : 2;
+    uint8_t valid_bit : 1;
     uint16_t offset_high;
 } __attribute__((packed));
 
 struct InterruptDescriptorTable
 {
     struct IDTGate table[IDT_MAX_ENTRY_COUNT];
-}__attribute__((packed));
+} __attribute__((packed));
 
 struct IDTR
 {
     uint16_t size;
     struct InterruptDescriptorTable *address;
-}__attribute__((packed));
+} __attribute__((packed));
 
-    /**
-     * Interrupt Descriptor Table, containing lists of IDTGate.
-     * One IDT already defined in idt.c
-     *
-     * ...
-     */
-    // TODO : Implement
-    // ...
+/**
+ * Interrupt Descriptor Table, containing lists of IDTGate.
+ * One IDT already defined in idt.c
+ *
+ * ...
+ */
+// TODO : Implement
+// ...
 
-    /**
-     * IDTR, carrying information where's the IDT located and size.
-     * Global kernel variable defined at idt.c.
-     *
-     * ...
-     */
-    // TODO : Implement
-    // ...
+/**
+ * IDTR, carrying information where's the IDT located and size.
+ * Global kernel variable defined at idt.c.
+ *
+ * ...
+ */
+// TODO : Implement
+// ...
 
-    /**
-     * Set IDTGate with proper interrupt handler values.
-     * Will directly edit global IDT variable and set values properly
-     *
-     * @param int_vector       Interrupt vector to handle
-     * @param handler_address  Interrupt handler address
-     * @param gdt_seg_selector GDT segment selector, for kernel use GDT_KERNEL_CODE_SEGMENT_SELECTOR
-     * @param privilege        Descriptor privilege level
-     */
+/**
+ * Set IDTGate with proper interrupt handler values.
+ * Will directly edit global IDT variable and set values properly
+ *
+ * @param int_vector       Interrupt vector to handle
+ * @param handler_address  Interrupt handler address
+ * @param gdt_seg_selector GDT segment selector, for kernel use GDT_KERNEL_CODE_SEGMENT_SELECTOR
+ * @param privilege        Descriptor privilege level
+ */
 void set_interrupt_gate(uint8_t int_vector, void *handler_address, uint16_t gdt_seg_selector, uint8_t privilege);
 
 /**
