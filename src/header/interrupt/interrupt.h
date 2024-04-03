@@ -6,6 +6,9 @@
 #include <stddef.h>
 #include "../cpu/portio.h"
 
+#define true 1
+#define false 0
+
 /* -- PIC constants -- */
 
 // PIC interrupt offset
