@@ -262,4 +262,3 @@ const char keyboard_scancode_1_to_ascii_map[256] = {
     0,
     0,
 };
-
