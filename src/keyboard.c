@@ -263,3 +263,8 @@ const char keyboard_scancode_1_to_ascii_map[256] = {
     0,
 };
 
+// Get keyboard buffer value and flush the buffer - @param buf Pointer to char buffer
+void get_keyboard_buffer(char *buf)
+{
+  memcpy(buf, keyboard_state.keyboard_buffer, 256);
+}
