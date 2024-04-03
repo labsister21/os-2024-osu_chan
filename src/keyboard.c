@@ -262,3 +262,16 @@ const char keyboard_scancode_1_to_ascii_map[256] = {
     0,
     0,
 };
+
+// Deactivate keyboard ISR / stop listening keyboard interrupt
+void keyboard_state_deactivate(void)
+{
+  keyboard_state.keyboard_input_on = false;
+}
+
+// Get keyboard buffer value and flush the buffer - @param buf Pointer to char buffer
+void get_keyboard_buffer(char *buf)
+{
+  memcpy(buf, keyboard_state.keyboard_buffer, 256);
+}
+
