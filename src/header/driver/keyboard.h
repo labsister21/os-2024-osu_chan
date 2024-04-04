@@ -6,8 +6,8 @@
 #include <stddef.h>
 #include "../interrupt/interrupt.h"
 
-#define true 1
-#define false 0
+// #define true 1
+// #define false 0
 
 #define EXT_SCANCODE_UP        0x48
 #define EXT_SCANCODE_DOWN      0x50
@@ -36,7 +36,7 @@ struct KeyboardDriverState {
     bool read_extended_mode;
     bool keyboard_input_on;
     uint8_t index;
-    char keyboard_buffer;
+    char keyboard_buffer[256];
 } __attribute((packed));
 
 

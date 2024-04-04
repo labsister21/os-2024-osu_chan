@@ -69,11 +69,11 @@
  */
 struct CPURegister
 {
-    struct
-    {
-        uint32_t edi;
-        uint32_t esi;
-    } __attribute__((packed)) index;
+    // struct
+    // {
+    //     uint32_t edi;
+    //     uint32_t esi;
+    // } __attribute__((packed)) index;
     struct
     {
         uint32_t esp;
@@ -86,13 +86,13 @@ struct CPURegister
         uint32_t ecx;
         uint32_t eax;
     } __attribute__((packed)) general;
-    struct
-    {
-        uint32_t gs;
-        uint32_t fs;
-        uint32_t es;
-        uint32_t ds;
-    } __attribute__((packed)) segment;
+    // struct
+    // {
+    //     uint32_t gs;
+    //     uint32_t fs;
+    //     uint32_t es;
+    //     uint32_t ds;
+    // } __attribute__((packed)) segment;
 } __attribute__((packed));
 
 /**
@@ -157,5 +157,7 @@ void pic_remap(void);
  * @param frame Information about CPU during interrupt is raised
  */
 void main_interrupt_handler(struct InterruptFrame frame);
+
+// void main_interrupt_handler(struct CPURegister cpu, uint32_t int_number, struct InterruptStack info);
 
 #endif

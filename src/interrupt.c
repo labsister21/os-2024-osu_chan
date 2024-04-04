@@ -1,4 +1,5 @@
 #include "header/interrupt/interrupt.h"
+#include "header/driver/keyboard.h"
 
 void io_wait(void)
 {
@@ -8,7 +9,9 @@ void io_wait(void)
 void pic_ack(uint8_t irq)
 {
     if (irq >= 8)
+    {
         out(PIC2_COMMAND, PIC_ACK);
+    }
     out(PIC1_COMMAND, PIC_ACK);
 }
 
@@ -41,13 +44,28 @@ void pic_remap(void)
 // Activate PIC mask for keyboard only
 void activate_keyboard_interrupt(void)
 {
-    out(PIC1_DATA, in(PIC1_DATA) & ~(1 << IRQ_KEYBOARD));;
+    out(PIC1_DATA, in(PIC1_DATA) & ~(1 << IRQ_KEYBOARD));
     out(PIC2_DATA, PIC_DISABLE_ALL_MASK);
 }
 
 void main_interrupt_handler(struct InterruptFrame frame)
 {
-    switch (frame.int_number){
-        
+    switch (frame.int_number)
+    {
+    case (0x21):
+        keyboard_isr();
+        break;
     }
 }
+
+// void main_interrupt_handler(
+//     __attribute__((unused)) struct CPURegister cpu,
+//     uint32_t int_number,
+//     __attribute__((unused)) struct InterruptStack info
+// ) {
+//     switch (int_number) {
+//         case (PIC1_OFFSET + IRQ_KEYBOARD): // Keyboard
+//             keyboard_isr();
+//             break;
+//     }
+// }
