@@ -7,6 +7,8 @@ CC            = gcc
 SOURCE_FOLDER = src
 OUTPUT_FOLDER = bin
 ISO_NAME      = os2024
+DISK_NAME      = storage
+
 
 # Flags
 WARNING_CFLAG = -Wall -Wextra -Werror
@@ -22,8 +24,10 @@ BOOT_FLAG = -b boot/grub/grub1 -no-emul-boot -boot-load-size 4
 IO_FLAG = -A os -input-charset utf8 -quiet -boot-info-table	-o $(OUTPUT_FOLDER)/$(ISO_NAME).iso $(OUTPUT_FOLDER)/iso
 
 
+disk:
+	@qemu-img create -f raw $(OUTPUT_FOLDER)/$(DISK_NAME).bin 4M
 run: all
-	@qemu-system-i386 -s  -cdrom $(OUTPUT_FOLDER)/$(ISO_NAME).iso
+	@qemu-system-i386 -s -drive file=storage.bin,format=raw,if=ide,index=0,media=disk -cdrom $(OUTPUT_FOLDER)/$(ISO_NAME).iso
 all: build
 build: iso
 clean:
@@ -31,6 +35,7 @@ clean:
 
 
 kernel:
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/disk.c -o $(OUTPUT_FOLDER)/disk.o
 	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/interrupt.c -o $(OUTPUT_FOLDER)/interrupt.o
 	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/idt.c -o $(OUTPUT_FOLDER)/idt.o	
 	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/insetup.s -o $(OUTPUT_FOLDER)/insetup.o	

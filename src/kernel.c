@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "header/cpu/gdt.h"
+#include "header/driver/disk.h"
 // #include "gdt.c"
 #include "header/interrupt/interrupt.h"
 #include "header/interrupt/idt.h"
@@ -27,12 +28,14 @@ void kernel_setup(void) {
     // while (true) b += 1;
     load_gdt(&_gdt_gdtr);
     pic_remap();
+    activate_keyboard_interrupt();
     initialize_idt();
     framebuffer_clear();
     framebuffer_set_cursor(0, 0);
-    framebuffer_write(0, 1, 'h', 0, 14);
-    framebuffer_set_cursor(0,1);
-    __asm__("int $0x4");
+    
+    struct BlockBuffer b;
+    for (int i = 0; i < 512; i++) b.buf[i] = i % 16;
+    write_blocks(&b, 17, 1);
     while (true);
 }
 // void kernel_setup(void)
