@@ -21,9 +21,12 @@ LFLAGS        = -T $(SOURCE_FOLDER)/linker.ld -melf_i386
 BOOT_FLAG = -b boot/grub/grub1 -no-emul-boot -boot-load-size 4
 IO_FLAG = -A os -input-charset utf8 -quiet -boot-info-table	-o $(OUTPUT_FOLDER)/$(ISO_NAME).iso $(OUTPUT_FOLDER)/iso
 
+# DISK_NAME      = storage
+# disk:
+# 	@qemu-img create -f raw $(OUTPUT_FOLDER)/$(DISK_NAME).bin 4M
 
 run: all
-	@qemu-system-i386 -s  -cdrom $(OUTPUT_FOLDER)/$(ISO_NAME).iso
+	@qemu-system-i386 -s -drive file=bin/storage.bin,format=raw,if=ide,index=0,media=disk -cdrom $(OUTPUT_FOLDER)/$(ISO_NAME).iso
 all: build
 build: iso
 clean:
@@ -36,6 +39,7 @@ kernel:
 	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/insetup.s -o $(OUTPUT_FOLDER)/insetup.o	
 	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/kernel-entrypoint.s -o $(OUTPUT_FOLDER)/kernel-entrypoint.o
 # TODO: Compile C file with CFLAGS
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/disk.c -o $(OUTPUT_FOLDER)/disk.o
 	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/kernel.c -o $(OUTPUT_FOLDER)/kernel.o
 	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/gdt.c -o $(OUTPUT_FOLDER)/gdt.o
 	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/stdlib/string.c -o $(OUTPUT_FOLDER)/string.o
