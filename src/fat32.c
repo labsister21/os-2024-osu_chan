@@ -148,7 +148,7 @@ bool is_empty_storage(void)
 {
     struct BlockBuffer block;
     read_blocks(block.buf, BOOT_SECTOR, 1);
-    if (memcmp(block.buf, fs_signature, BLOCK_SIZE))
+    if (memcmp(block.buf, fs_signature, BLOCK_SIZE) == 0)
     {
         return true;
     }
@@ -171,11 +171,11 @@ void create_fat32(void)
     driver_state.fat_table.cluster_map[1] = CLUSTER_1_VALUE;
     driver_state.fat_table.cluster_map[2] = FAT32_FAT_END_OF_FILE;
 
-    //kita nulis fat table ke cluster 1, kita nulis satu cluster aja
-    //kenapa cluster 1, hmmmm, ngikutin petunjuk sih , aghhhh
+    // kita nulis fat table ke cluster 1, kita nulis satu cluster aja
+    // kenapa cluster 1, hmmmm, ngikutin petunjuk sih , aghhhh
     write_clusters(driver_state.fat_table.cluster_map, 1, 1);
 
-    //mari kita setting cluster 2 jadi root directory
+    // mari kita setting cluster 2 jadi root directory
     struct FAT32DirectoryTable temp;
 
     init_directory_table(&temp, "root", ROOT_CLUSTER_NUMBER);
@@ -189,6 +189,15 @@ void create_fat32(void)
  */
 void initialize_filesystem_fat32(void)
 {
+    if (is_empty_storage())
+    {
+        create_fat32();
+    }
+    else
+    {
+
+        read_clusters(&driver_state.fat_table, 1, 1);
+    }
 }
 
 /**
@@ -231,7 +240,46 @@ void read_clusters(void *ptr, uint32_t cluster_number, uint8_t cluster_count)
  */
 int8_t read_directory(struct FAT32DriverRequest request)
 {
+    read_clusters(driver_state.dir_table_buf.table, request.parent_cluster_number, 1);
+
+    // Cek apakah paling nggak ada 1 entry yang valid
+    bool is_empty_directory = true;
+    for (int i = 0; i < CLUSTER_SIZE / sizeof(struct FAT32DirectoryEntry); i++)
+    {
+        if (driver_state.dir_table_buf.table[i].user_attribute != UATTR_NOT_EMPTY)
+        {
+            is_empty_directory = false;
+            break;
+        }
+    }
+
+    if (is_empty_directory)
+    {
+        return -1; // gak ada 1 entry pun yang memenuhi syarat
+    }
+
+    for (int i = 0; i < CLUSTER_SIZE / sizeof(struct FAT32DirectoryEntry); i++)
+    {
+        //kalau namanya sama
+        if (memcmp(driver_state.dir_table_buf.table[i].name, request.name, 8) == 0)
+        {
+            if (driver_state.dir_table_buf.table[i].attribute == ATTR_SUBDIRECTORY)
+            {
+                // Baca direktori
+                uint32_t cluster_number = (driver_state.dir_table_buf.table[i].cluster_high << 16) + driver_state.dir_table_buf.table[i].cluster_low;
+                read_clusters(request.buf, cluster_number, 1);
+                return 0; //dapet
+            }
+            else
+            {
+                return 1; //bukan directory
+            }
+        }
+    }
+    //gak dapet
+    return 2;
 }
+
 
 /**
  * FAT32 read, read a file from file system.
