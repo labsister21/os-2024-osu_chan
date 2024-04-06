@@ -394,6 +394,8 @@ void keyboard_isr(void)
       {
         if (col < 79)
         {
+          keyboard_state.keyboard_buffer[keyboard_state.index] = '0';
+          keyboard_state.index++;
           col++;
         }
       }
