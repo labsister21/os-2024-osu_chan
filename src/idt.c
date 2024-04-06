@@ -51,11 +51,11 @@ void set_interrupt_gate(
     idt_int_gate->valid_bit = 1;
 
 
-    uint16_t lower = (uint32_t)handler_address & 0xFFFF;
-    uint16_t higher = ((uint32_t)handler_address) >> 16 & 0xFFFF;
+    // uint16_t lower = (uint32_t)handler_address & 0xFFFF;
+    // uint16_t higher = ((uint32_t)handler_address) >> 16 & 0xFFFF;
 
-    idt_int_gate->offset_low = lower;
-    idt_int_gate->offset_high = higher;
+    idt_int_gate->offset_low = (uint16_t)((uint32_t)handler_address & 0xFFFF);
+    idt_int_gate->offset_high = (uint16_t)(((uint32_t)handler_address) >> 16 & 0xFFFF);
 
     idt_int_gate->privilege = privilege;
     idt_int_gate->segment = gdt_seg_selector;
