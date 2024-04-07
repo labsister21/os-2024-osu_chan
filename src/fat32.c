@@ -260,7 +260,8 @@ int8_t read_directory(struct FAT32DriverRequest request)
 
     // agak ragu tapi asumsinya yang di cari adalah folder yang ada di lokasi parent_cluster-number
 
-    if (driver_state.dir_table_buf.table[0].user_attribute == UATTR_NOT_EMPTY){
+    if (driver_state.dir_table_buf.table[0].user_attribute == UATTR_NOT_EMPTY)
+    {
 
         for (int i = 0; i < (int)(sizeof(driver_state.dir_table_buf.table) / sizeof(struct FAT32DirectoryEntry)); i++)
         {
@@ -270,8 +271,8 @@ int8_t read_directory(struct FAT32DriverRequest request)
                 if (driver_state.dir_table_buf.table[i].attribute == ATTR_SUBDIRECTORY)
                 {
                     // Baca direktori
-                    uint32_t cluster_number = (driver_state.dir_table_buf.table[i].cluster_high << 16) + driver_state.dir_table_buf.table[i].cluster_low;
-                    read_clusters(request.buf, cluster_number, 1);
+                    uint32_t cluster = ((driver_state.dir_table_buf.table[i].cluster_high << 16) & 0xFFFF0000) + ((driver_state.dir_table_buf.table[i].cluster_low) & 0x0000FFFF);
+                    read_clusters(request.buf, cluster, 1);
                     return 0; // dapet
                 }
                 else
@@ -279,13 +280,12 @@ int8_t read_directory(struct FAT32DriverRequest request)
                     return 1; // bukan directory
                 }
             }
+        }
+        // kalau udah ngecekin directory entry tapi gak ada, yaudah, gak dapet
+        return 2;
     }
-    // gak dapet
-    return 2;
-    }
-    else{
-        return -1;
-    }
+
+    return -1;
 }
 
 /**
@@ -296,6 +296,65 @@ int8_t read_directory(struct FAT32DriverRequest request)
  */
 int8_t read(struct FAT32DriverRequest request)
 {
+    read_clusters(driver_state.dir_table_buf.table, request.parent_cluster_number, 1);
+
+    // kalau entry root directory kosong, asumsinya unknown lah ya
+    if (driver_state.dir_table_buf.table[0].user_attribute == UATTR_NOT_EMPTY)
+    {
+
+        read_clusters(driver_state.fat_table.cluster_map, FAT_CLUSTER_NUMBER, 1);
+
+        // bool is_directory = false;
+        for (int i = 0; (int)(sizeof(driver_state.dir_table_buf.table) / sizeof(struct FAT32DirectoryEntry)); i++)
+        {
+
+            // kalau misalkan nama file + ekstensinya cocok, hmm tapi gimana kalau file binary, kayak chall??? ini pikirin nanti lah ya
+            if ((memcmp(driver_state.dir_table_buf.table[i].name, request.name, 8) == 0) && (memcmp(driver_state.dir_table_buf.table[i].ext, request.ext, 3) == 0))
+            {
+
+                // kalau ternyata dia directory
+                if (driver_state.dir_table_buf.table[i].attribute == ATTR_SUBDIRECTORY)
+                {
+                    return 1;
+                }
+                else
+                {
+                    // kalau ukuran dari file nya lebih gedhe dari buffer
+                    if (driver_state.dir_table_buf.table[i].filesize > request.buf)
+                    {
+                        return 2;
+                    }
+                    else
+                    {
+
+                        // kalau ketemu, tinggal ngelakuin iterasi ke FAT table
+                        int pengali_clus = 0;
+
+                        //lokasi cluster pertama
+                        uint32_t cluster = ((driver_state.dir_table_buf.table[i].cluster_high << 16) & 0xFFFF0000) + ((driver_state.dir_table_buf.table[i].cluster_low) & 0x0000FFFF);
+
+                        while (cluster != FAT32_FAT_END_OF_FILE)
+                        {
+                            //request.buf + cluster_size * pengali itu buat nyari offset untuk setiap kita mau naro cluster di buffer, biar ga ke overwrite
+                            read_clusters(request.buf + CLUSTER_SIZE * pengali_clus, cluster, 1);
+
+                            //baca lokasi cluster berikutnya
+                            cluster = driver_state.fat_table.cluster_map[cluster];
+
+                            pengali_clus += 1;
+                        }
+
+                        return 0;
+                    }
+                }
+            }
+        }
+
+        // kalau udah ngelakuin iterasi ke directory table tapi gak ketemu, yaudah
+        return 3;
+    }
+    
+    return -1;
 }
 
 /**
