@@ -242,44 +242,51 @@ int8_t read_directory(struct FAT32DriverRequest request)
 {
     read_clusters(driver_state.dir_table_buf.table, request.parent_cluster_number, 1);
 
-    // Cek apakah paling nggak ada 1 entry yang valid
-    bool is_empty_directory = true;
-    for (int i = 0; i < CLUSTER_SIZE / sizeof(struct FAT32DirectoryEntry); i++)
-    {
-        if (driver_state.dir_table_buf.table[i].user_attribute != UATTR_NOT_EMPTY)
-        {
-            is_empty_directory = false;
-            break;
-        }
-    }
+    // // Cek apakah paling nggak ada 1 entry yang valid
+    // bool is_empty_directory = true;
+    // for (int i = 0; i < (int)(sizeof(driver_state.dir_table_buf.table) / sizeof(struct FAT32DirectoryEntry)); i++)
+    // {
+    //     if (driver_state.dir_table_buf.table[i].user_attribute != UATTR_NOT_EMPTY)
+    //     {
+    //         is_empty_directory = false;
+    //         break;
+    //     }
+    // }
 
-    if (is_empty_directory)
-    {
-        return -1; // gak ada 1 entry pun yang memenuhi syarat
-    }
+    // if (is_empty_directory)
+    // {
+    //     return -1; // gak ada 1 entry pun yang memenuhi syarat
+    // }
 
-    for (int i = 0; i < CLUSTER_SIZE / sizeof(struct FAT32DirectoryEntry); i++)
-    {
-        //kalau namanya sama
-        if (memcmp(driver_state.dir_table_buf.table[i].name, request.name, 8) == 0)
+    // agak ragu tapi asumsinya yang di cari adalah folder yang ada di lokasi parent_cluster-number
+
+    if (driver_state.dir_table_buf.table[0].user_attribute == UATTR_NOT_EMPTY){
+
+        for (int i = 0; i < (int)(sizeof(driver_state.dir_table_buf.table) / sizeof(struct FAT32DirectoryEntry)); i++)
         {
-            if (driver_state.dir_table_buf.table[i].attribute == ATTR_SUBDIRECTORY)
+            // kalau namanya sama
+            if (memcmp(driver_state.dir_table_buf.table[i].name, request.name, 8) == 0)
             {
-                // Baca direktori
-                uint32_t cluster_number = (driver_state.dir_table_buf.table[i].cluster_high << 16) + driver_state.dir_table_buf.table[i].cluster_low;
-                read_clusters(request.buf, cluster_number, 1);
-                return 0; //dapet
+                if (driver_state.dir_table_buf.table[i].attribute == ATTR_SUBDIRECTORY)
+                {
+                    // Baca direktori
+                    uint32_t cluster_number = (driver_state.dir_table_buf.table[i].cluster_high << 16) + driver_state.dir_table_buf.table[i].cluster_low;
+                    read_clusters(request.buf, cluster_number, 1);
+                    return 0; // dapet
+                }
+                else
+                {
+                    return 1; // bukan directory
+                }
             }
-            else
-            {
-                return 1; //bukan directory
-            }
-        }
     }
-    //gak dapet
+    // gak dapet
     return 2;
+    }
+    else{
+        return -1;
+    }
 }
-
 
 /**
  * FAT32 read, read a file from file system.
