@@ -403,7 +403,8 @@ int8_t delete(struct FAT32DriverRequest request)
         {
             // kalau ketemu nama dan ekstensinya sama
             if (
-                (memcmp(driver_state.dir_table_buf.table[i].name, request.name, 8) == 0) && (memcmp(driver_state.dir_table_buf.table[0].ext, request.ext, 3) == 0))
+                (memcmp(driver_state.dir_table_buf.table[i].name, request.name, 8) == 0) && (memcmp(driver_state.dir_table_buf.table[0].ext, request.ext, 3) == 0)
+                )
             {
 
                 // simpen informasi clusternya
@@ -489,18 +490,46 @@ int8_t delete(struct FAT32DriverRequest request)
                     // hapus dari cluster dari FAT
                     driver_state.fat_table.cluster_map[cluster] = FAT32_FAT_EMPTY_ENTRY;
 
-                    //update hasil penghapusan ke disk
+                    // update hasil penghapusan ke disk
                     write_clusters(driver_state.fat_table.cluster_map, FAT_CLUSTER_NUMBER, 1);
-
                 }
             }
-            //kalau ternyata file yang dihapus
-            else{
+            // kalau ternyata file yang dihapus
+            else
+            {
+                // mirip kayak ngehapus directory tapi gak harus ngecekin directory table entry nya
+                // dan harus ngehapusin entry di FAT table
+                driver_state.dir_table_buf.table[index_found].attribute = FAT32_FAT_EMPTY_ENTRY;
+                driver_state.dir_table_buf.table[index_found].user_attribute = FAT32_FAT_EMPTY_ENTRY;
 
+                for (int i = 0; i < 8; i++)
+                {
+                    driver_state.dir_table_buf.table[index_found].name[i] = 0;
+                }
+
+                for (int i = 0; i < 3; i++)
+                {
+                    driver_state.dir_table_buf.table[index_found].ext[i] = 0;
+                }
+
+                write_cluster(driver_state.dir_table_buf.table, request.parent_cluster_number, 1);
+
+                uint32_t prev = 0;
+                uint32_t now = cluster;
+
+                while (driver_state.fat_table.cluster_map[now] != FAT32_FAT_END_OF_FILE)
+                {
+                    prev = now;
+                    now = driver_state.fat_table.cluster_map[now];
+                    driver_state.fat_table.cluster_map[prev] = FAT32_FAT_EMPTY_ENTRY;
+                }
+
+                driver_state.fat_table.cluster_map[now] = 0;
+                write_clusters(driver_state.fat_table.cluster_map, FAT_CLUSTER_NUMBER, 1);
             }
 
-        //penghapusan berhasil dilakukan
-        return 0;
+            // penghapusan berhasil dilakukan
+            return 0;
         }
     }
 
