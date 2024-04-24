@@ -531,7 +531,8 @@ int8_t write(struct FAT32DriverRequest request)
                     break;
                 }
             }
-
+            
+            //aman
             if (is_exist == false)
             {
                 return -1;
@@ -573,12 +574,12 @@ int8_t write(struct FAT32DriverRequest request)
 
                 for (int i = 0; i < 3; i++)
                 {
-                    driver_state.dir_table_buf.table[index_found].ext[i] = request.name[i];
+                    driver_state.dir_table_buf.table[index_found].ext[i] = request.ext[i];
                 }
 
                 driver_state.dir_table_buf.table[index_found].user_attribute = UATTR_NOT_EMPTY;
-                driver_state.dir_table_buf.table[index_found].cluster_high = (uint16_t)(((uint32_t)start) >> 16 & 0xFFFF);
-                driver_state.dir_table_buf.table[index_found].cluster_low = (uint16_t)((uint32_t)start & 0xFFFF);
+                driver_state.dir_table_buf.table[index_found].cluster_high = (uint16_t)(((uint32_t)start) >> 16 & 0x0000FFFF);
+                driver_state.dir_table_buf.table[index_found].cluster_low = (uint16_t)((uint32_t)start & 0x0000FFFF);
 
                 driver_state.dir_table_buf.table[index_found].filesize = request.buffer_size;
 
