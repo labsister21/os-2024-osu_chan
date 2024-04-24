@@ -194,6 +194,7 @@ void create_fat32(void)
     // dir_table->table[0].cluster_low = (parent_dir_cluster >> 16) & 0xFFFF;
     temp.table[0].cluster_high = ROOT_CLUSTER_NUMBER & 0xFFFF;
     temp.table[0].cluster_low = (ROOT_CLUSTER_NUMBER >> 16) & 0xFFFF;
+    
     init_directory_table(&temp, "root", ROOT_CLUSTER_NUMBER);
 
     write_clusters(temp.table, 2, 1);
@@ -390,7 +391,7 @@ int8_t write(struct FAT32DriverRequest request)
         bool is_full = true;
         int index_found = 0;
 
-        for (int i = 1; i < (int)(CLUSTER_SIZE / sizeof(struct FAT32DirectoryEntry)); i++)
+        for (int i = 0; i < (int)(CLUSTER_SIZE / sizeof(struct FAT32DirectoryEntry)); i++)
         {
 
             if (driver_state.dir_table_buf.table[i].user_attribute != UATTR_NOT_EMPTY)
@@ -403,7 +404,7 @@ int8_t write(struct FAT32DriverRequest request)
         }
 
         // kalau udah penuh
-        if (is_full)
+        if (is_full == true)
         {
             return -1;
         }
@@ -420,12 +421,12 @@ int8_t write(struct FAT32DriverRequest request)
         }
 
         // kalau file/folder udah ada, asumsinya ngecek dari nama dan ekstensi aja itu udah cukup
-        if (cek_nama)
+        if (cek_nama == true)
         {
             return 1;
         }
 
-        // sesuai petunjuk kalau buffer_size == 0, makan bikin directory / sub directory
+        // sesuai petunjuk kalau buffer_size == 0, maka  bikin directory / sub directory
         if (request.buffer_size == 0)
         {
             uint32_t empty_entry = 0x0;
@@ -460,7 +461,7 @@ int8_t write(struct FAT32DriverRequest request)
 
             for (int i = 0; i < 3; i++)
             {
-                driver_state.dir_table_buf.table[index_found].ext[i] = request.name[i];
+                driver_state.dir_table_buf.table[index_found].ext[i] = request.ext[i];
             }
 
             driver_state.dir_table_buf.table[index_found].attribute = ATTR_SUBDIRECTORY;

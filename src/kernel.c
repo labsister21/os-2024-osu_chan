@@ -67,6 +67,23 @@ void kernel_setup(void)
 
     initialize_filesystem_fat32();
 
+
+    struct ClusterBuffer cbuf[5];
+    for (uint32_t i = 0; i < 5; i++)
+        for (uint32_t j = 0; j < CLUSTER_SIZE; j++)
+            cbuf[i].buf[j] = i + 'a';
+
+    struct FAT32DriverRequest request = {
+        .buf                   = cbuf,
+        .name                  = "ngopisek",
+        .ext                   = "tes",
+        .parent_cluster_number = ROOT_CLUSTER_NUMBER,
+        .buffer_size           = 0,
+    } ;
+
+    write(request);  // Create folder "ikanaide"
+    // delete(request);
+
     // struct ClusterBuffer cbuf[5];
     // for (uint32_t i = 0; i < 5; i++)
     // {
