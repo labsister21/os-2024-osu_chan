@@ -81,7 +81,7 @@ void kernel_setup(void)
         .buffer_size           = 0,
     } ;
 
-    write(request);  // Create folder "ikanaide"
+    write(request);  
     // delete(request);
 
     // struct ClusterBuffer cbuf[5];
