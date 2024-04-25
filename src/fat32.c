@@ -642,7 +642,7 @@ int8_t delete(struct FAT32DriverRequest request)
         {
             // kalau ketemu nama dan ekstensinya sama
             if (
-                (memcmp(driver_state.dir_table_buf.table[i].name, request.name, 8) == 0) && (memcmp(driver_state.dir_table_buf.table[0].ext, request.ext, 3) == 0))
+                (memcmp(driver_state.dir_table_buf.table[i].name, request.name, 8) == 0) && (memcmp(driver_state.dir_table_buf.table[i].ext, request.ext, 3) == 0))
             {
 
                 // simpen informasi clusternya

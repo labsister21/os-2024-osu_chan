@@ -81,7 +81,8 @@ void kernel_setup(void)
         .buffer_size           = 10000,
     } ;
 
-    write(request);  
+    write(request); 
+    // delete(request);
     // delete(request);
 
     // struct ClusterBuffer cbuf[5];
