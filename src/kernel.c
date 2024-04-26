@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include "header/cpu/gdt.h"
 // #include "gdt.c"
+#include "header/stdlib/string.h"
 #include "header/driver/disk.h"
 #include "header/filesystem/fat32.h"
 #include "header/driver/keyboard.h"
@@ -67,23 +68,13 @@ void kernel_setup(void)
 
     initialize_filesystem_fat32();
 
+    // If read properly, readcbuf should filled with 'a'
 
-    struct ClusterBuffer cbuf[5];
-    for (uint32_t i = 0; i < 5; i++)
-        for (uint32_t j = 0; j < 5; j++)
-            cbuf[i].buf[j] = i + 'a';
+    // char cek2 = (char)cek;
 
-    struct FAT32DriverRequest request = {
-        .buf                   = cbuf,
-        .name                  = "ngopisek",
-        .ext                   = "txt",
-        .parent_cluster_number = ROOT_CLUSTER_NUMBER,
-        .buffer_size           = 10000,
-    } ;
-
-    write(request); 
     // delete(request);
-    // delete(request);
+    // // delete(request);
+    // write(request2);
 
     // struct ClusterBuffer cbuf[5];
     // for (uint32_t i = 0; i < 5; i++)
@@ -101,7 +92,6 @@ void kernel_setup(void)
     //     .parent_cluster_number = ROOT_CLUSTER_NUMBER,
     //     .buffer_size = 0,
     // };
-
 
     // write(request); // Create folder "ikanaide"
     // write_blocks(fs_signature, BOOT_SECTOR, 1);
@@ -130,6 +120,11 @@ void kernel_setup(void)
     // }
     // write_blocks(&b, 17, 1);
     // while (true);
+
+    while (true)
+    {
+        keyboard_state_activate();
+    }
 }
 // void kernel_setup(void)
 // {

@@ -535,7 +535,7 @@ int8_t write(struct FAT32DriverRequest request)
             //aman
             if (is_exist == false)
             {
-                return -1;
+                return -1;  
             }
 
             // melakukan pemetaan FAT table atau cluster_map, sama ngecek jumlah yang tersedia
@@ -737,8 +737,6 @@ int8_t delete(struct FAT32DriverRequest request)
             {
                 // mirip kayak ngehapus directory tapi gak harus ngecekin directory table entry nya
                 // dan harus ngehapusin entry di FAT table
-                driver_state.dir_table_buf.table[index_found].attribute = FAT32_FAT_EMPTY_ENTRY;
-                driver_state.dir_table_buf.table[index_found].user_attribute = FAT32_FAT_EMPTY_ENTRY;
 
                 for (int i = 0; i < 8; i++)
                 {
@@ -749,6 +747,9 @@ int8_t delete(struct FAT32DriverRequest request)
                 {
                     driver_state.dir_table_buf.table[index_found].ext[i] = 0;
                 }
+
+                driver_state.dir_table_buf.table[index_found].attribute = FAT32_FAT_EMPTY_ENTRY;
+                driver_state.dir_table_buf.table[index_found].user_attribute = FAT32_FAT_EMPTY_ENTRY;
 
                 write_clusters(driver_state.dir_table_buf.table, request.parent_cluster_number, 1);
 
@@ -763,6 +764,7 @@ int8_t delete(struct FAT32DriverRequest request)
                 }
 
                 driver_state.fat_table.cluster_map[now] = 0;
+
                 write_clusters(driver_state.fat_table.cluster_map, FAT_CLUSTER_NUMBER, 1);
             }
 
