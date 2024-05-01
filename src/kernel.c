@@ -4,6 +4,7 @@
 // #include "gdt.c"
 #include "header/stdlib/string.h"
 #include "header/driver/disk.h"
+#include "header/memory/paging.h"
 #include "header/filesystem/fat32.h"
 #include "header/driver/keyboard.h"
 #include "header/interrupt/interrupt.h"
