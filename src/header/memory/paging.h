@@ -17,25 +17,29 @@
 // Operating system page directory, using page size PAGE_FRAME_SIZE (4 MiB)
 extern struct PageDirectory _paging_kernel_page_directory;
 
-
-
-
 /**
  * Page Directory Entry Flag, only first 8 bit
  * 
- * @param present_bit       Indicate whether this entry is exist or not
+ * @param present_bit     Indicate whether this entry is exist or not
+ * @param write_bit
+ * @param user_supervisor
+ * @param page_level_write
+ * @param page_level_cache
+ * @param accessed
+ * @param dirty
+ * @param use_pagesize_4_mb
  * ...
  */
 struct PageDirectoryEntryFlag {
-    uint8_t present_bit        : 1;
     // TODO : Continue. Note: Only 8-bit flags
+    uint8_t present_bit        : 1;
     uint8_t write_bit        : 1;
-    uint8_t use_pagesize_4_mb : 1;
+    uint8_t user_supervisor : 1;
     uint8_t page_level_write : 1;
     uint8_t page_level_cache : 1;
     uint8_t accessed : 1;
     uint8_t dirty : 1;
-    uint8_t page_size : 1;
+    uint8_t use_pagesize_4_mb : 1;
 } __attribute__((packed));
 
 /**
@@ -44,7 +48,9 @@ struct PageDirectoryEntryFlag {
  *
  * @param flag            Contain 8-bit page directory entry flag
  * @param global_page     Is this page translation global & cannot be flushed?
- * ...
+ * @param ignored
+ * @param pat
+ * @param higher_address
  * @param reserved_2      Reserved bit (1-bit)
  * @param lower_address   10-bit page frame lower address, note directly correspond with 4 MiB memory (= 0x40 0000 = 1
  * Note:
@@ -75,7 +81,7 @@ struct PageDirectoryEntry {
 struct PageDirectory {
     
     struct PageDirectoryEntry table[PAGE_ENTRY_COUNT];
-} __attribute__((packed));
+} __attribute__((aligned(0x1000)));
 
 /**
  * Containing page manager states.

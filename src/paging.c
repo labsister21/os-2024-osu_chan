@@ -81,12 +81,12 @@ bool paging_allocate_user_page_frame(struct PageDirectory *page_dir, void *virtu
     update_page_directory_entry(page_dir, (void*)(free_frame_index * PAGE_FRAME_SIZE), virtual_addr, (struct PageDirectoryEntryFlag) {
                 .present_bit    = 1,
                 .write_bit      = 1,
-                .use_pagesize_4_mb       = 1,
+                .user_supervisor = 1,
                 .page_level_write = 0,
                 .page_level_cache = 0,
                 .accessed = 0,
                 .dirty = 0,
-                .page_size = 1
+                .use_pagesize_4_mb = 1
     });
     page_manager_state.free_page_frame_count--;
     return true;
