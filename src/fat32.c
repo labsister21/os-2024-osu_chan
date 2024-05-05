@@ -558,7 +558,7 @@ int8_t write(struct FAT32DriverRequest request)
                 }
             }
 
-            if (cluster_ready == count_cluster)
+            if (cluster_ready >= count_cluster)
             {
                 // partisi paling terakhir jadi end_of_file
                 driver_state.fat_table.cluster_map[prev] = FAT32_FAT_END_OF_FILE;
