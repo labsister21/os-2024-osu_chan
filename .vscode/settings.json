@@ -59,6 +59,10 @@
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
     "kernel-entrypoint.h": "c",
-    "gdt.h": "c"
+    "gdt.h": "c",
+    "fat32.h": "c",
+    "*.tcc": "c",
+    "chrono": "c",
+    "typeinfo": "c"
   }
 }

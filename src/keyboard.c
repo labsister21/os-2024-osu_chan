@@ -410,3 +410,17 @@ void keyboard_isr(void)
   }
   pic_ack(IRQ_KEYBOARD);
 }
+
+void puts(char *buf, int count, uint8_t color) {
+  for (int i = 0; i < count; i++) {
+        if (buf[i] == '\n') {
+            row++;
+            col = 0;
+            framebuffer_set_cursor(row, col);
+        } else {
+            framebuffer_write(row, col, buf[i], color, 0x0);
+            col++;
+        }
+    }
+    framebuffer_set_cursor(row, col);
+}

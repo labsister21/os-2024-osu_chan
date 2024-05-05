@@ -62,4 +62,6 @@ void get_keyboard_buffer(char *buf);
  */
 void keyboard_isr(void);
 
+void puts(char *buf, int count, uint8_t color);
+
 #endif
