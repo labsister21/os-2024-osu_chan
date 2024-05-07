@@ -42,11 +42,11 @@ void framebuffer_set_cursor(uint8_t r, uint8_t c)
 
 void framebuffer_write(uint8_t row, uint8_t col, char c, uint8_t fg, uint8_t bg)
 {
-    uint16_t colourBit = (bg << 4) | (fg & 0x0F) ;
-    uint16_t fullBit = (colourBit << 8) | c ;
+    uint16_t colour = (bg << 4) | (fg & 0x0F) ;
+    uint16_t concat = (colour << 8) | c ;
 
     volatile uint16_t* where = (volatile uint16_t*) FRAMEBUFFER_MEMORY_OFFSET + (row * 80 + col) ;
-    *where = fullBit;
+    *where = concat;
 }
 
 void framebuffer_clear(void)

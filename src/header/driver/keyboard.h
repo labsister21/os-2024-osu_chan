@@ -62,4 +62,8 @@ void get_keyboard_buffer(char *buf);
  */
 void keyboard_isr(void);
 
+void put_char(char c, uint32_t color);
+
+void puts(const char *str, uint32_t len, uint32_t color);
+
 #endif

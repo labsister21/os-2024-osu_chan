@@ -410,3 +410,42 @@ void keyboard_isr(void)
   }
   pic_ack(IRQ_KEYBOARD);
 }
+
+void put_char(char c, uint32_t color)
+{
+  if (c != '\n'){
+    framebuffer_write(row, col, c, color, 0);
+  }
+  if (col == 80 - 1 || c == '\n')
+  {
+    row++;
+    col = 0;
+    if (row == 25)
+    {
+      // kita salin dari baris kedua, taro di atas
+      memcpy(FRAMEBUFFER_MEMORY_OFFSET, FRAMEBUFFER_MEMORY_OFFSET + 80 * 2, (80 * 2 * 25) - (80 * 2));
+
+      // bersh-bersih baris dibawah
+      for (int i = 0; i < 80; i++)
+      {
+        framebuffer_write(25 - 1, i, ' ', 0xFF, 0);
+      }
+    }
+  }
+  else
+  {
+    col++;
+  }
+}
+
+void puts(const char *str, uint32_t len, uint32_t color)
+{
+  for (uint32_t i = 0; i < len; i++)
+  {
+    if (str[i] == '\0'){
+      break;
+    }
+    put_char(str[i], color);
+  }
+  framebuffer_set_cursor(row, col);
+}
