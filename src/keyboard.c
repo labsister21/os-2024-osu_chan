@@ -268,15 +268,22 @@ static struct KeyboardDriverState keyboard_state;
 // Activate keyboard ISR / start listen keyboard & save to buffer
 void keyboard_state_activate(void)
 {
-  keyboard_state.keyboard_input_on = true;
+  // keyboard_state.keyboard_input_on = true;
   // keyboard_state.index = 0;
   // memset(keyboard_state.keyboard_buffer, 0, 256);
+  if (!keyboard_state.keyboard_input_on) {
+        activate_keyboard_interrupt();
+        keyboard_state.keyboard_input_on = true;
+    }
 }
 
 // Deactivate keyboard ISR / stop listening keyboard interrupt
 void keyboard_state_deactivate(void)
 {
-  keyboard_state.keyboard_input_on = false;
+    if (keyboard_state.keyboard_input_on) {
+        deactivate_keyboard_interrupt();
+        keyboard_state.keyboard_input_on = false;
+    }
 }
 
 // Get keyboard buffer value and flush the buffer - @param buf Pointer to char buffer

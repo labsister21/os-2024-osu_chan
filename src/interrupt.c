@@ -2,6 +2,8 @@
 #include "header/driver/keyboard.h"
 #include "header/interrupt/idt.h"
 #include "header/filesystem/fat32.h"
+#include "header/stdlib/string.h"
+#include "header/interrupt/interrupt.h"
 
 struct TSSEntry _interrupt_tss_entry = {
     .ss0 = GDT_KERNEL_DATA_SEGMENT_SELECTOR,
@@ -54,6 +56,12 @@ void activate_keyboard_interrupt(void)
     out(PIC2_DATA, PIC_DISABLE_ALL_MASK);
 }
 
+void deactivate_keyboard_interrupt(void) {
+    out(PIC1_DATA, PIC_DISABLE_ALL_MASK);
+    out(PIC2_DATA, PIC_DISABLE_ALL_MASK);
+}
+
+
 void set_tss_kernel_current_stack(void)
 {
     uint32_t stack_ptr;
@@ -67,6 +75,9 @@ void main_interrupt_handler(struct InterruptFrame frame)
 {
     switch (frame.int_number)
     {
+    case 0xe :
+        __asm__("hlt");
+        break;
     case (0x21):
         keyboard_isr();
         break;
@@ -74,6 +85,7 @@ void main_interrupt_handler(struct InterruptFrame frame)
         syscall(frame);
     }
 }
+
 
 void syscall(struct InterruptFrame frame)
 {
@@ -93,21 +105,21 @@ void syscall(struct InterruptFrame frame)
         *((int8_t *)frame.cpu.general.ecx) = delete (*(struct FAT32DriverRequest *)frame.cpu.general.ebx);
         break;
     case 4:
-        get_keyboard_buffer((char *)frame.cpu.general.ebx);
+        keyboard_state_activate();
+        __asm__("sti");
+        while (is_keyboard_blocking());
+        char buf[256];
+        get_keyboard_buffer(buf);
+        memcpy((char *) frame.cpu.general.ebx, buf, frame.cpu.general.ecx);
         break;
     case 5:
-        // put_char(frame.cpu.general.ebx, frame.cpu.general.ecx);
-        puts((char *)frame.cpu.general.ebx, 1, frame.cpu.general.ecx);
-        break;
-    case 6:
         puts(
             (char *)frame.cpu.general.ebx,
             frame.cpu.general.ecx,
             frame.cpu.general.edx); // Assuming puts() exist in kernel
         break;
-    case 7:
-        keyboard_state_activate();
-        break;
+    case 6:
+        keyboard_state_activate();        
     }
 }
 

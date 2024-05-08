@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "header/filesystem/fat32.h"
+#include "header/stdlib/string.h"
 
 void syscall(uint32_t eax, uint32_t ebx, uint32_t ecx, uint32_t edx) {
     __asm__ volatile("mov %0, %%ebx" : /* <Empty> */ : "r"(ebx));
@@ -11,26 +12,45 @@ void syscall(uint32_t eax, uint32_t ebx, uint32_t ecx, uint32_t edx) {
     __asm__ volatile("int $0x30");
 }
 
-int main(void) {
-    struct ClusterBuffer      cl[2]   = {0};
-    struct FAT32DriverRequest request = {
-        .buf                   = &cl,
-        .name                  = "shell",
-        .ext                   = "\0\0\0",
-        .parent_cluster_number = ROOT_CLUSTER_NUMBER,
-        .buffer_size           = CLUSTER_SIZE,
-    };
-    int32_t retcode;
-    syscall(0, (uint32_t) &request, (uint32_t) &retcode, 0);
-    if (retcode == 0)
-        syscall(6, (uint32_t) "owo\n", 4, 0xF);
+size_t strlen(char *string) {
+    size_t i = 0;
+    while (string[i] != '\0')
+        i++;
+    return i;
+}
 
-    char buf;
-    // syscall(7, 0, 0, 0);
-    // while (true) {
-    //     syscall(4, (uint32_t) &buf, 0, 0);
-    //     syscall(5, (uint32_t) &buf, 0xF, 0);
-    // }
+// 0 sama, 1 beda
+uint8_t strcmp(char *s1, char *s2) {
+    size_t i = 0;
+    if (strlen(s1) == strlen(s2)) {
+        while (s1[i] != '\0') {
+            if (s1[i] != s2[i])
+                return 1;
+            i++;
+        }
+        return 0;
+    }
+    return 1;
+}
+
+void put (char* buf, uint8_t color) {
+    int i = 0;
+    while (buf[i] != '\0')
+        i++;
+    syscall (5, (uint32_t) buf, i, color);
+}
+
+int main(void) {
+
+    char buf[100];
+    while (true) {
+        put("TesTes", 40);
+        put(":", 40);
+        put("/", 40);
+        put("$ ", 40);
+        syscall (4, (uint32_t) buf, 100, 0x0);
+    }
 
     return 0;
 }
+
