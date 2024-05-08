@@ -59,6 +59,7 @@
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
     "kernel-entrypoint.h": "c",
-    "gdt.h": "c"
+    "gdt.h": "c",
+    "user-shell.h": "c"
   }
 }

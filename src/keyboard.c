@@ -285,6 +285,11 @@ void get_keyboard_buffer(char *buf)
   memcpy(buf, keyboard_state.keyboard_buffer, 256);
 }
 
+
+bool is_keyboard_blocking(void) {
+    return keyboard_state.keyboard_input_on;
+}
+
 /**
  * Handling keyboard interrupt & process scancodes into ASCII character.
  * Will start listen and process keyboard scancode if keyboard_input_on.
@@ -420,12 +425,12 @@ void put_char(char c, uint32_t color)
   {
     row++;
     col = 0;
-    if (row == 25)
+    if (row <= 25)
     {
-      // kita salin dari baris kedua, taro di atas
+      // kita salin dari baris kedua dst, taro di atas
       memcpy(FRAMEBUFFER_MEMORY_OFFSET, FRAMEBUFFER_MEMORY_OFFSET + 80 * 2, (80 * 2 * 25) - (80 * 2));
 
-      // bersh-bersih baris dibawah
+      // bersh-bersih paling bawah
       for (int i = 0; i < 80; i++)
       {
         framebuffer_write(25 - 1, i, ' ', 0xFF, 0);
@@ -438,14 +443,28 @@ void put_char(char c, uint32_t color)
   }
 }
 
-void puts(const char *str, uint32_t len, uint32_t color)
-{
-  for (uint32_t i = 0; i < len; i++)
-  {
-    if (str[i] == '\0'){
-      break;
+// void puts(const char *str, uint32_t len, uint32_t color)
+// {
+//   for (uint32_t i = 0; i < len; i++)
+//   {
+//     if (str[i] == '\0'){
+//       break;
+//     }
+//     put_char(str[i], color);
+//   }
+//   framebuffer_set_cursor(row, col);
+// }
+
+void puts(char *buf, int count, uint8_t color) {
+  for (int i = 0; i < count; i++) {
+        if (buf[i] == '\n') {
+            row++;
+            col = 0;
+            framebuffer_set_cursor(row, col);
+        } else {
+            framebuffer_write(row, col, buf[i], color, 0x0);
+            col++;
+        }
     }
-    put_char(str[i], color);
-  }
-  framebuffer_set_cursor(row, col);
+    framebuffer_set_cursor(row, col);
 }

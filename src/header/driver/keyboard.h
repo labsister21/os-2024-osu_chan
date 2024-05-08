@@ -59,11 +59,16 @@ void get_keyboard_buffer(char *buf);
 /**
  * Handling keyboard interrupt & process scancodes into ASCII character.
  * Will start listen and process keyboard scancode if keyboard_input_on.
+ * 
+ * 
  */
+bool is_keyboard_blocking(void);
+
 void keyboard_isr(void);
 
 void put_char(char c, uint32_t color);
 
-void puts(const char *str, uint32_t len, uint32_t color);
+// void puts(const char *str, uint32_t len, uint32_t color);
+void puts(char *buf, int count, uint8_t color);
 
 #endif

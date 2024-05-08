@@ -1,4 +1,3 @@
-crt0.s
 global _start
 extern main
 

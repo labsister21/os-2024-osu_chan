@@ -26,11 +26,11 @@ int main(void) {
         syscall(6, (uint32_t) "owo\n", 4, 0xF);
 
     char buf;
-    syscall(7, 0, 0, 0);
-    while (true) {
-        syscall(4, (uint32_t) &buf, 0, 0);
-        syscall(5, (uint32_t) &buf, 0xF, 0);
-    }
+    // syscall(7, 0, 0, 0);
+    // while (true) {
+    //     syscall(4, (uint32_t) &buf, 0, 0);
+    //     syscall(5, (uint32_t) &buf, 0xF, 0);
+    // }
 
     return 0;
 }
