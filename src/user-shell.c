@@ -41,16 +41,11 @@ void put (char* buf, uint8_t color) {
 }
 
 int main(void) {
-
-    char buf[100];
-    while (true) {
-        put("TesTes", 40);
-        put(":", 40);
-        put("/", 40);
-        put("$ ", 40);
-        syscall (4, (uint32_t) buf, 100, 0x0);
+    char buf;
+    while(true){
+        syscall(7, 0, 0, 0);
+        put(&buf, 40);
     }
-
     return 0;
 }
 

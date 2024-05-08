@@ -71,22 +71,6 @@ void set_tss_kernel_current_stack(void)
     _interrupt_tss_entry.esp0 = stack_ptr + 8;
 }
 
-void main_interrupt_handler(struct InterruptFrame frame)
-{
-    switch (frame.int_number)
-    {
-    case 0xe :
-        __asm__("hlt");
-        break;
-    case (0x21):
-        keyboard_isr();
-        break;
-    case (0x30):
-        syscall(frame);
-    }
-}
-
-
 void syscall(struct InterruptFrame frame)
 {
     switch (frame.cpu.general.eax)
@@ -105,12 +89,7 @@ void syscall(struct InterruptFrame frame)
         *((int8_t *)frame.cpu.general.ecx) = delete (*(struct FAT32DriverRequest *)frame.cpu.general.ebx);
         break;
     case 4:
-        keyboard_state_activate();
-        __asm__("sti");
-        while (is_keyboard_blocking());
-        char buf[256];
-        get_keyboard_buffer(buf);
-        memcpy((char *) frame.cpu.general.ebx, buf, frame.cpu.general.ecx);
+        get_keyboard_buffer((char*) frame.cpu.general.ebx);
         break;
     case 5:
         puts(
@@ -118,10 +97,28 @@ void syscall(struct InterruptFrame frame)
             frame.cpu.general.ecx,
             frame.cpu.general.edx); // Assuming puts() exist in kernel
         break;
-    case 6:
+    case 7:
         keyboard_state_activate();        
     }
 }
+
+
+void main_interrupt_handler(struct InterruptFrame frame)
+{
+    switch (frame.int_number)
+    {
+    case 0xe :
+        __asm__("hlt");
+        break;
+    case (0x21):
+        keyboard_isr();
+        break;
+    case (0x30):
+        syscall(frame);
+    }
+}
+
+
 
 // void main_interrupt_handler(
 //     __attribute__((unused)) struct CPURegister cpu,
