@@ -288,8 +288,9 @@ int8_t read_directory(struct FAT32DriverRequest request)
                 if (driver_state.dir_table_buf.table[i].attribute == ATTR_SUBDIRECTORY)
                 {
                     // Baca direktori
-                    uint32_t cluster = ((((uint32_t)(driver_state.dir_table_buf.table[i].cluster_high)) << 16) & 0xFFFF0000) | (((uint32_t)(driver_state.dir_table_buf.table[i].cluster_low)) & 0x0000FFFF);
-                    read_clusters(request.buf, cluster, 1);
+                    // uint32_t cluster = ((((uint32_t)(driver_state.dir_table_buf.table[i].cluster_high)) << 16) & 0xFFFF0000) | (((uint32_t)(driver_state.dir_table_buf.table[i].cluster_low)) & 0x0000FFFF);
+                    // read_clusters(request.buf, cluster, 1);
+                    read_clusters(request.buf, ((driver_state.dir_table_buf.table[i].cluster_high << 16) + driver_state.dir_table_buf.table[i].cluster_low),1);
                     return 0; // dapet
                 }
                 else
@@ -348,7 +349,7 @@ int8_t read(struct FAT32DriverRequest request)
                         int pengali_clus = 0;
 
                         // lokasi cluster pertama
-                        uint32_t cluster = ((((uint32_t)(driver_state.dir_table_buf.table[i].cluster_high)) << 16) & 0xFFFF0000) | (((uint32_t)(driver_state.dir_table_buf.table[i].cluster_low)) & 0x0000FFFF);
+                        int cluster = (driver_state.dir_table_buf.table[i].cluster_high << 16) + driver_state.dir_table_buf.table[i].cluster_low;
 
                         while (cluster != FAT32_FAT_END_OF_FILE)
                         {
@@ -466,8 +467,8 @@ int8_t write(struct FAT32DriverRequest request)
 
             driver_state.dir_table_buf.table[index_found].attribute = ATTR_SUBDIRECTORY;
             driver_state.dir_table_buf.table[index_found].user_attribute = UATTR_NOT_EMPTY;
-            driver_state.dir_table_buf.table[index_found].cluster_high = (uint16_t)(((uint32_t)empty_entry) >> 16 & 0x0000FFFF);
-            driver_state.dir_table_buf.table[index_found].cluster_low = (uint16_t)((uint32_t)empty_entry & 0x0000FFFF);
+            driver_state.dir_table_buf.table[index_found].cluster_high = empty_entry >> 16;
+            driver_state.dir_table_buf.table[index_found].cluster_low = empty_entry;
             driver_state.dir_table_buf.table[index_found].filesize = request.buffer_size;
 
             // kita update disk dengan nilai yang sudah diperbaharui
@@ -479,8 +480,8 @@ int8_t write(struct FAT32DriverRequest request)
             //ini harusnya dah bener, yang di load ke struct itu cluster dari empty_entry, tempat kita naro sebelumnya
             //tapi behaviornya masih aneh
             read_clusters(driver_state.dir_table_buf.table, empty_entry, 1);
-            driver_state.dir_table_buf.table[0].cluster_high = (uint16_t)(((uint32_t)request.parent_cluster_number) >> 16 & 0x0000FFFF);
-            driver_state.dir_table_buf.table[0].cluster_low = (uint16_t)((uint32_t)request.parent_cluster_number & 0x0000FFFF);
+            driver_state.dir_table_buf.table[0].cluster_high = request.parent_cluster_number >> 16;
+            driver_state.dir_table_buf.table[0].cluster_low = request.parent_cluster_number;
             
             //kita setting buat table[0] itu ada informasi dirinya sendiri
             for (int i = 0; i < 8; i++)
@@ -558,7 +559,7 @@ int8_t write(struct FAT32DriverRequest request)
                 }
             }
 
-            if (cluster_ready == count_cluster)
+            if (cluster_ready >= count_cluster)
             {
                 // partisi paling terakhir jadi end_of_file
                 driver_state.fat_table.cluster_map[prev] = FAT32_FAT_END_OF_FILE;
@@ -578,8 +579,8 @@ int8_t write(struct FAT32DriverRequest request)
                 }
 
                 driver_state.dir_table_buf.table[index_found].user_attribute = UATTR_NOT_EMPTY;
-                driver_state.dir_table_buf.table[index_found].cluster_high = (uint16_t)(((uint32_t)start) >> 16 & 0x0000FFFF);
-                driver_state.dir_table_buf.table[index_found].cluster_low = (uint16_t)((uint32_t)start & 0x0000FFFF);
+                driver_state.dir_table_buf.table[index_found].cluster_high = start >> 16;
+                driver_state.dir_table_buf.table[index_found].cluster_low = start;
 
                 driver_state.dir_table_buf.table[index_found].filesize = request.buffer_size;
 

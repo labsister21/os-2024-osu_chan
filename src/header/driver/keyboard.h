@@ -54,6 +54,9 @@ void keyboard_state_deactivate(void);
 // Get keyboard buffer value and flush the buffer - @param buf Pointer to char buffer
 void get_keyboard_buffer(char *buf);
 
+bool is_keyboard_blocking(void);
+
+
 /* -- Keyboard Interrupt Service Routine -- */
 
 /**
@@ -61,5 +64,10 @@ void get_keyboard_buffer(char *buf);
  * Will start listen and process keyboard scancode if keyboard_input_on.
  */
 void keyboard_isr(void);
+
+void put_char(char c, uint32_t color);
+
+
+void puts(char *str, uint32_t count, uint32_t color);
 
 #endif
