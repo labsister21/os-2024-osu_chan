@@ -4,8 +4,14 @@
 
 
 #define WHITE       0b1111
+#define RED         0b1100
+#define GREEN       0b1010
+#define BLUE        0b1001
+#define TRUE        1
+#define FALSE       0
 
 uint32_t current_directory = ROOT_CLUSTER_NUMBER;
+struct FAT32DirectoryTable dir_table;
 
 void syscall(uint32_t eax, uint32_t ebx, uint32_t ecx, uint32_t edx) {
     __asm__ volatile("mov %0, %%ebx" : /* <Empty> */ : "r"(ebx));
@@ -28,8 +34,8 @@ int inputparse (char *args_val, int args_info[128][2]) {
     int j = 0;
     int k = 0;
 
-    bool endWord = true;
-    bool startWord = true;
+    bool endWord = TRUE;
+    bool startWord = TRUE;
     int countchar = 0;
 
     // Iterate all over the chars
@@ -45,9 +51,9 @@ int inputparse (char *args_val, int args_info[128][2]) {
             if (!endWord) {
                 k = 0;
                 j++;
-                endWord = true;
+                endWord = TRUE;
             }
-            startWord = true;
+            startWord = TRUE;
             i++;
         }
 
@@ -57,14 +63,14 @@ int inputparse (char *args_val, int args_info[128][2]) {
         }
 
         // Out then it is not the end of the word
-        endWord = false;
+        endWord = FALSE;
 
         // Process other chars
         if (startWord) {
             nums++;
             countchar = 0;
             args_info[j][k] = i;
-            startWord = false;
+            startWord = FALSE;
             k++;
         }
 
@@ -76,59 +82,60 @@ int inputparse (char *args_val, int args_info[128][2]) {
     return nums;
 }
 
-// void updateDirectoryTable(uint32_t cluster_number) {
-//     syscall(6, (uint32_t) &dir_table, cluster_number, 0x0);
-// }
-
-// void printCWD(char* path_str, uint32_t current_dir) {
-//     // Intantiate vars and length vars
-//     int pathlen = 0;
-//     int nodecount = 0;
-//     char nodeIndex [10][64];
-
-//     // Biasakan untuk clear dulu
-//     clear(path_str, 128);
-//     for (int i = 0; i < 10; i++) {
-//         clear(nodeIndex[i], 64);
-//     }
-
-//     if (current_dir == ROOT_CLUSTER_NUMBER) {
-//         path_str[pathlen++] = '/';
-//         put (path_str, WHITE);
-//         return;
-//     }
-    
-//     // Loop sampe parentnya ROOT
-//     uint32_t parent = current_dir;
-//     path_str[pathlen++] = '/';
-//     while (parent != ROOT_CLUSTER_NUMBER) {
-//         // Isi dir_table dengan isi dari cluster sekarang
-//         updateDirectoryTable(parent);
-
-//         // Ambil parentnya
-//         parent = (uint32_t) ((dir_table.table[0].cluster_high << 16) | dir_table.table[0].cluster_low);
-        
-//         // Masukin namanya ke list
-//         memcpy(nodeIndex[nodecount], dir_table.table[0].name, strlen(dir_table.table[0].name));
-//         nodecount++;
-//     }
-
-//     // Iterate back to get the full pathstr
-//     for (int i = nodecount - 1; i >= 0; i--) {
-//         for (size_t j = 0; j < strlen(nodeIndex[i]); j++) {
-//             path_str[pathlen++] = nodeIndex[i][j];
-//         } 
-        
-//         if (i > 0) {
-//             path_str[pathlen++] = '/';
-//         }
-//     }
-
-//     put (path_str, WHITE);
-// }
 
 void put(char* str, uint8_t color) {
     syscall(6, (uint32_t) str, strlen(str), color);
+}
+
+void updateDirectoryTable(uint32_t cluster_number) {
+    syscall(6, (uint32_t) &dir_table, cluster_number, 0x0);
+}
+
+void printCWD(char* path_str, uint32_t current_dir) {
+    // Intantiate vars and length vars
+    int pathlen = 0;
+    int nodecount = 0;
+    char nodeIndex [10][64];
+
+    // Biasakan untuk clear dulu
+    clear(path_str, 128);
+    for (int i = 0; i < 10; i++) {
+        clear(nodeIndex[i], 64);
+    }
+
+    if (current_dir == ROOT_CLUSTER_NUMBER) {
+        path_str[pathlen++] = '/';
+        put(path_str, BLUE);
+        return;
+    }
+    
+    // Loop sampe parentnya ROOT
+    uint32_t parent = current_dir;
+    path_str[pathlen++] = '/';
+    while (parent != ROOT_CLUSTER_NUMBER) {
+        // Isi dir_table dengan isi dari cluster sekarang
+        updateDirectoryTable(parent);
+
+        // Ambil parentnya
+        parent = (uint32_t) ((dir_table.table[0].cluster_high << 16) | dir_table.table[0].cluster_low);
+        
+        // Masukin namanya ke list
+        memcpy(nodeIndex[nodecount], dir_table.table[0].name, strlen(dir_table.table[0].name));
+        nodecount++;
+    }
+
+    // Iterate back to get the full pathstr
+    for (int i = nodecount - 1; i >= 0; i--) {
+        for (size_t j = 0; j < strlen(nodeIndex[i]); j++) {
+            path_str[pathlen++] = nodeIndex[i][j];
+        } 
+        
+        if (i > 0) {
+            path_str[pathlen++] = '/';
+        }
+    }
+
+    put (path_str, BLUE);
 }
 
 void putn(char* str, uint8_t color, int n) {
@@ -136,10 +143,10 @@ void putn(char* str, uint8_t color, int n) {
 }
 
 void screen() {
-    put("  ___   ___  _   _         ___  _  _  ___  _  _\n", WHITE); 
-    put(" / _ \\ / __|| | | |       / __|| || |/   \\| \\| |\n", WHITE);
-    put("| (_) |\\__ \\| |_| |      | (__ | __ || - || .  |\n", WHITE);
-    put(" \\___/ |___/ \\___/        \\___||_||_||_|_||_|\\_|\n", WHITE);
+    put("  ___   ___  _   _    ___  _  _  ___  _  _\n", WHITE); 
+    put(" / _ \\ / __|| | | |  / __|| || |/   \\| \\| |\n", WHITE);
+    put("| (_) |\\__ \\| |_| | | (__ | __ || - || .  |\n", WHITE);
+    put(" \\___/ |___/ \\___/   \\___||_||_||_|_||_|\\_|\n\n", WHITE);
 
 }
 
@@ -149,8 +156,8 @@ int main(void) {
     char args[2048];
     int args_info[128][2];
     char path[2048];
-    syscall(4, (uint32_t) args, 2048, 0x0);
-    syscall(8, 0, 0, 0);
+    // syscall(4, (uint32_t) args, 2048, 0x0);
+    // syscall(8, 0, 0, 0);
 
 
     while (true) {
@@ -161,17 +168,18 @@ int main(void) {
 
         clear(path, 2048);
 
-        put("os2024-OSu_chan\0", WHITE);
+        put("os2024-OSu_chan\0", GREEN);
         put(":", WHITE);
-        put("/", WHITE);
-        // printCWD(path, current_directory);
+        // put("/", GREEN);
+        printCWD(path, current_directory);
         put("$ ", WHITE);
 
         syscall(4, (uint32_t) args, 2048, 0);
-        put("hehe1", WHITE);
+        put("hehe1\n", WHITE);
 
         // jumlah input
         int args_count = inputparse(args, args_info);
+        // int args_count = 2;
         put("hehe2", WHITE);
 
         if(args_count != 0) {
@@ -209,7 +217,7 @@ int main(void) {
                 for (char i = 0; i < (*(args_info))[1]; i++) {
                     putn(args + (*(args_info))[0] + i, WHITE, 1);
                 }
-                put(": command not found\n", WHITE);
+                put(": command not found\n", RED);
             }
         }
     }
