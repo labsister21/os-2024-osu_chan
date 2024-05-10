@@ -360,6 +360,11 @@ void keyboard_isr(void)
   pic_ack(IRQ_KEYBOARD);
 }
 
+void reset_keyboard_position() {
+  row = 0;
+  col = 0;
+}
+
 
 void put_char(char c, uint32_t color)
 {

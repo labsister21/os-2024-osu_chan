@@ -65,6 +65,8 @@ bool is_keyboard_blocking(void);
  */
 void keyboard_isr(void);
 
+void reset_keyboard_position();
+
 void put_char(char c, uint32_t color);
 
 
