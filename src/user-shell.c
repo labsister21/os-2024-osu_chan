@@ -7,8 +7,6 @@
 #define RED         0b1100
 #define GREEN       0b1010
 #define BLUE        0b1001
-#define TRUE        1
-#define FALSE       0
 
 uint32_t current_directory = ROOT_CLUSTER_NUMBER;
 struct FAT32DirectoryTable dir_table;
@@ -34,26 +32,27 @@ int inputparse (char *args_val, int args_info[128][2]) {
     int j = 0;
     int k = 0;
 
-    bool endWord = TRUE;
-    bool startWord = TRUE;
+    bool endWord = true;
+    bool startWord = true;
     int countchar = 0;
+    int len = strlen(args_val);
 
     // Iterate all over the chars
     // Ignore blanks at first
-    while (args_val[i] == ' ' && args_val[i] != 0x0A) {
+    while (args_val[i] == ' ' && i < len) {
         i++;
     }
 
     // While belum eof
-    while (args_val[i] != 0x0A) {
+    while (i < len) {
         // Ignore blanks
         while (args_val[i] == ' ' && args_val[i] != 0x0A) {
             if (!endWord) {
                 k = 0;
                 j++;
-                endWord = TRUE;
+                endWord = true;
             }
-            startWord = TRUE;
+            startWord = true;
             i++;
         }
 
@@ -63,14 +62,14 @@ int inputparse (char *args_val, int args_info[128][2]) {
         }
 
         // Out then it is not the end of the word
-        endWord = FALSE;
+        endWord = false;
 
         // Process other chars
         if (startWord) {
             nums++;
             countchar = 0;
             args_info[j][k] = i;
-            startWord = FALSE;
+            startWord = false;
             k++;
         }
 
@@ -78,10 +77,8 @@ int inputparse (char *args_val, int args_info[128][2]) {
         args_info[j][k] = countchar;
         i++; // Next char
     }
-
     return nums;
 }
-
 
 void put(char* str, uint8_t color) {
     syscall(6, (uint32_t) str, strlen(str), color);
@@ -175,12 +172,9 @@ int main(void) {
         put("$ ", WHITE);
 
         syscall(4, (uint32_t) args, 2048, 0);
-        put("hehe1\n", WHITE);
 
         // jumlah input
         int args_count = inputparse(args, args_info);
-        // int args_count = 2;
-        put("hehe2", WHITE);
 
         if(args_count != 0) {
             if ((memcmp(args + *(args_info)[0], "cd", 2) == 0) && ((*(args_info))[1] == 2)) {

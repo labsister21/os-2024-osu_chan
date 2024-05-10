@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include "header/driver/disk.h"
+#include "../driver/disk.h"
 
 /**
  * FAT32 - IF2230 edition - 2024
@@ -44,8 +44,7 @@ struct ClusterBuffer {
     uint8_t buf[CLUSTER_SIZE];
 } __attribute__((packed));
 
-
-
+extern struct FAT32DriverState fat32_driver_state;
 
 
 /* -- FAT32 Data Structures -- */
@@ -245,6 +244,12 @@ int8_t write(struct FAT32DriverRequest request);
  * @param request buf and buffer_size is unused
  * @return Error code: 0 success - 1 not found - 2 folder is not empty - -1 unknown
  */
-int8_t delete(struct FAT32DriverRequest request);
+int8_t Delete(struct FAT32DriverRequest request);
+
+
+/* -- Helper Functions -- */
+
+void init_directory_entry(struct FAT32DirectoryEntry* dest, char* name, char* ext, uint8_t attribute, uint32_t cluster_number, uint32_t filesize);
+
 
 #endif
