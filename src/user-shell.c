@@ -19,62 +19,7 @@ void syscall(uint32_t eax, uint32_t ebx, uint32_t ecx, uint32_t edx) {
 
 }
 
-int inputparse (char *args_val, int args_info[128][2]) {
-    // Declare the vars
-    int nums = 0;
 
-    // Process to count the args, initialize 0
-    int i = 0;
-    int j = 0;
-    int k = 0;
-
-    bool endWord = true;
-    bool startWord = true;
-    int countchar = 0;
-
-    // Iterate all over the chars
-    // Ignore blanks at first
-    while (args_val[i] == ' ' && args_val[i] != 0x0A) {
-        i++;
-    }
-
-    // While belum eof
-    while (args_val[i] != 0x0A) {
-        // Ignore blanks
-        while (args_val[i] == ' ' && args_val[i] != 0x0A) {
-            if (!endWord) {
-                k = 0;
-                j++;
-                endWord = true;
-            }
-            startWord = true;
-            i++;
-        }
-
-        // Return the number of args
-        if (args_val[i] == 0x0A) {
-            return nums;
-        }
-
-        // Out then it is not the end of the word
-        endWord = false;
-
-        // Process other chars
-        if (startWord) {
-            nums++;
-            countchar = 0;
-            args_info[j][k] = i;
-            startWord = false;
-            k++;
-        }
-
-        countchar++;
-        args_info[j][k] = countchar;
-        i++; // Next char
-    }
-
-    return nums;
-}
 
 // void updateDirectoryTable(uint32_t cluster_number) {
 //     syscall(6, (uint32_t) &dir_table, cluster_number, 0x0);
@@ -135,6 +80,66 @@ void putn(char* str, uint8_t color, int n) {
     syscall(6, (uint32_t) str, n, color);
 }
 
+int inputparse (char *args_val, int args_info[128][2]) {
+    // Declare the vars
+    int nums = 0;
+
+    // Process to count the args, initialize 0
+    int i = 0;
+    int j = 0;
+    int k = 0;
+
+    bool endWord = true;
+    bool startWord = true;
+    int countchar = 0;
+    int len = strlen(args_val);
+
+    // Iterate all over the chars
+    // Ignore blanks at first
+    while (args_val[i] == ' ' && i < len) {
+        i++;
+    }
+
+    // While belum eof
+    while (i < len) {
+        // Ignore blanks
+        while (args_val[i] == ' ' && args_val[i] != 0x0A) {
+            if (!endWord) {
+                k = 0;
+                j++;
+                endWord = true;
+            }
+            startWord = true;
+            i++;
+        }
+
+        // Return the number of args
+        if (args_val[i] == 0x0A) {
+            return nums;
+        }
+
+        // Out then it is not the end of the word
+        endWord = false;
+
+        // Process other chars
+        if (startWord) {
+            nums++;
+            countchar = 0;
+            args_info[j][k] = i;
+            startWord = false;
+            k++;
+        }
+
+        countchar++;
+        args_info[j][k] = countchar;
+        i++; // Next char
+    }
+
+    char temp = i + '0';
+    put(&temp, WHITE);
+    return nums;
+}
+
 void screen() {
     put("  ___   ___  _   _         ___  _  _  ___  _  _\n", WHITE); 
     put(" / _ \\ / __|| | | |       / __|| || |/   \\| \\| |\n", WHITE);
@@ -168,11 +173,11 @@ int main(void) {
         put("$ ", WHITE);
 
         syscall(4, (uint32_t) args, 2048, 0);
-        put("hehe1", WHITE);
+        // put("hehe1", WHITE);
 
         // jumlah input
         int args_count = inputparse(args, args_info);
-        put("hehe2", WHITE);
+        // put("hehe2", WHITE);
 
         if(args_count != 0) {
             if ((memcmp(args + *(args_info)[0], "cd", 2) == 0) && ((*(args_info))[1] == 2)) {
