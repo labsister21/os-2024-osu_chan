@@ -16,7 +16,7 @@ __attribute__((aligned(0x1000))) struct PageDirectory _paging_kernel_page_direct
             .flag.write_bit         = 1,
             .flag.use_pagesize_4_mb = 1,
             .lower_address          = 0,
-        },
+        }
     }
 };
 
@@ -24,7 +24,8 @@ static struct PageManagerState page_manager_state = {
     .page_frame_map = {
         [0]                            = true,
         [1 ... PAGE_FRAME_MAX_COUNT-1] = false
-    },PAGE_FRAME_MAX_COUNT -1
+    },
+    .free_page_frame_count = PAGE_FRAME_MAX_COUNT - 1
 };
 
 void update_page_directory_entry(
@@ -35,7 +36,7 @@ void update_page_directory_entry(
 ) {
     uint32_t page_index = ((uint32_t) virtual_addr >> 22) & 0x3FF;
     page_dir->table[page_index].flag          = flag;
-    page_dir->table[page_index].lower_address = ((uint32_t) physical_addr >> 22) & 0x3FF;
+    page_dir->table[page_index].lower_address = (( uint32_t) physical_addr >> 22) & 0x3FF;
     flush_single_tlb(virtual_addr);
 }
 
@@ -48,6 +49,7 @@ void flush_single_tlb(void *virtual_addr) {
 /* --- Memory Management --- */
 // TODO: Implement
 bool paging_allocate_check(uint32_t amount) {
+    // TODO: Check whether requested amount is available
     if(page_manager_state.free_page_frame_count * PAGE_FRAME_SIZE >= amount){
         return true;
     }
@@ -56,7 +58,7 @@ bool paging_allocate_check(uint32_t amount) {
 
 
 bool paging_allocate_user_page_frame(struct PageDirectory *page_dir, void *virtual_addr) {
-    /**
+    /*
      * TODO: Find free physical frame and map virtual frame into it
      * - Find free physical frame in page_manager_state.page_frame_map[] using any strategies
      * - Mark page_manager_state.page_frame_map[]
@@ -66,29 +68,33 @@ bool paging_allocate_user_page_frame(struct PageDirectory *page_dir, void *virtu
      *     > user bit       true
      *     > pagesize 4 mb  true
      */ 
-     // Check if the requested amount of memory is available
+    
     if (!paging_allocate_check(PAGE_FRAME_SIZE)) {
-        return false; 
+        return false;
     }
-    uint32_t free_frame_index = 0;
-    for (uint32_t i = 0; i < PAGE_FRAME_MAX_COUNT; ++i) {
-        if (!page_manager_state.page_frame_map[i]) {
-            free_frame_index = i;
-            page_manager_state.page_frame_map[i] = true;
-            break;
-        }
+
+    // Find free physical frame using first-fit algorithm
+    uint32_t i = 0;
+    while (i < PAGE_FRAME_MAX_COUNT && page_manager_state.page_frame_map[i]) {
+        i++;
     }
-    update_page_directory_entry(page_dir, (void*)(free_frame_index * PAGE_FRAME_SIZE), virtual_addr, (struct PageDirectoryEntryFlag) {
-                .present_bit    = 1,
-                .write_bit      = 1,
-                .user_supervisor = 1,
-                .page_level_write = 0,
-                .page_level_cache = 0,
-                .accessed = 0,
-                .dirty = 0,
-                .use_pagesize_4_mb = 1
-    });
+    
+    struct PageDirectoryEntryFlag flag = {
+        .present_bit        = 1,
+    // TODO : Continue. Note: Only 8-bit flags
+        .write_bit          = 1,
+        .user_supervisor    = 1,
+        .page_level_write   = 0,
+        .page_level_cache   = 0,
+        .accessed           = 0,
+        .dirty              = 0,
+        .use_pagesize_4_mb  = 1
+    };
+    
+    update_page_directory_entry(page_dir, (void *)(i * PAGE_FRAME_SIZE), virtual_addr, flag);
+    page_manager_state.page_frame_map[i] = true;
     page_manager_state.free_page_frame_count--;
+
     return true;
 }
 
@@ -98,19 +104,17 @@ bool paging_free_user_page_frame(struct PageDirectory *page_dir, void *virtual_a
      * - Use the page_dir.table values to check mapped physical frame
      * - Remove the entry by setting it into 0
      */
+    uint32_t page_index = ((uint32_t)virtual_addr >> 22) & 0x3FF;
 
-      uint32_t page_index = ((uint32_t)virtual_addr >> 22) & 0x3FF;
-    // Check if the page is currently allocated
-    if (page_dir->table[page_index].flag.present_bit) {
-        // Clear the page frame map entry corresponding to the freed frame
-        page_manager_state.page_frame_map[page_dir->table[page_index].lower_address] = false;
-        // Clear the page directory entry
-        page_dir->table[page_index].flag.present_bit = 0;
-        // Increment the free page frame count
-        page_manager_state.free_page_frame_count++;
-        // Invalidate TLB entry
-        flush_single_tlb(virtual_addr);
-        return true; // Page successfully deallocated
-    }
-    return false; // Page not currently allocated
+    struct PageDirectoryEntry *page_entry = &page_dir->table[page_index];
+
+    if (!page_entry->flag.present_bit)
+        return false;
+
+    struct PageDirectoryEntry empty_entry = {0};
+    *page_entry = empty_entry;
+    page_manager_state.page_frame_map[page_entry->lower_address] = false;
+    page_manager_state.free_page_frame_count++;
+
+    return true;
 }

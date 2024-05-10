@@ -51,6 +51,7 @@ struct GlobalDescriptorTable global_descriptor_table = {
          {/* TODO: User   Code Descriptor */
         .segment_low = 0xFFFF,
         .base_low = 0,
+
         .base_mid = 0,
         .type_bit = 0xA,
         .non_system = 1,
@@ -68,9 +69,9 @@ struct GlobalDescriptorTable global_descriptor_table = {
         .base_low = 0,
 
         .base_mid = 0,
-        .type_bit = 0x2,
+        .type_bit = 2,
         .non_system = 1,
-        .privilege_level = 0x3,
+        .privilege_level = 3,
         .is_present = 1,
         .segment_limit = 0xF,
         .usable_by_software = 0,
@@ -80,18 +81,19 @@ struct GlobalDescriptorTable global_descriptor_table = {
         .base_high = 0,
         },
         {
-        .segment_limit      = (sizeof(struct TSSEntry) & (0xF << 16)) >> 16,
-        .segment_low       = sizeof(struct TSSEntry),
-        .base_high         = 0,
-        .base_mid          = 0,
-        .base_low          = 0,
-        .non_system        = 0,    // S bit
-        .type_bit          = 0x9,
-        .privilege_level   = 0,    // DPL
-        .is_present        = 1,    // P bit
-        .default_op_size   = 1,    // D/B bit
-        .is_64bit_segment  = 0,    // L bit
-        .granularity       = 0,    // G bit
+        .segment_low = sizeof(struct TSSEntry),
+        .base_low = 0,
+        .base_mid = 0,
+        .type_bit = 0x9,
+        .non_system = 0,
+        .privilege_level = 0,
+        .is_present = 1,
+        .segment_limit = (sizeof(struct TSSEntry) & (0xF << 16)) >> 16,
+        .usable_by_software = 0,
+        .is_64bit_segment = 0,
+        .default_op_size = 1,
+        .granularity = 0,
+        .base_high = 0
         },
         {0}
 }};
@@ -102,10 +104,8 @@ struct GlobalDescriptorTable global_descriptor_table = {
  * From: https://wiki.osdev.org/Global_Descriptor_Table, GDTR.size is GDT size minus 1.
  */
 struct GDTR _gdt_gdtr = {
-    // TODO : Implement, this GDTR will point to global_descriptor_table. 
-    //        Use sizeof operator
-    .size = sizeof(global_descriptor_table),
-    .address = &global_descriptor_table,
+    .size = sizeof(global_descriptor_table) - 1,
+    .address = &global_descriptor_table
 };
 
 void gdt_install_tss(void) {

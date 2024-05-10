@@ -1,7 +1,7 @@
 global loader                        ; the entry symbol for ELF
 global load_gdt                      ; load GDT table
 global set_tss_register              ; set tss register to GDT entry
-global kernel_execute_user_program   ; execute initial user program from kernel
+global kernel_execute_user_program
 extern kernel_setup                  ; kernel C entrypoint
 extern _paging_kernel_page_directory ; kernel page directory
 
@@ -79,13 +79,6 @@ flush_cs:
     mov ds, ax
     mov es, ax
     ret
-
-
-set_tss_register:
-    mov ax, 0x28 | 0 ; GDT TSS Selector, ring 0
-    ltr ax
-    ret
-
 kernel_execute_user_program:
     mov  eax, 0x20 | 0x3
     mov  ds, ax
@@ -108,5 +101,7 @@ kernel_execute_user_program:
     push eax ; eip register to jump back
 
     iret
-
-
+set_tss_register:
+    mov ax, 0x28 | 0 ; GDT TSS Selector, ring 0
+    ltr ax
+    ret
