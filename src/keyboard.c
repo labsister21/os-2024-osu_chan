@@ -271,10 +271,10 @@ static struct KeyboardDriverState keyboard_state;
 // Activate keyboard ISR / start listen keyboard & save to buffer
 void keyboard_state_activate(void)
 {
-  keyboard_state.keyboard_input_on = true;
     for (uint32_t i = 0; i < 256; i++) {
         keyboard_state.keyboard_buffer[i] = '\0';
     }
+    keyboard_state.keyboard_input_on = true;
     keyboard_state.index = 0;
 }
 
@@ -397,4 +397,15 @@ void puts(char *str, uint32_t count, uint32_t color)
     }
 
     framebuffer_set_cursor(row, col);
+}
+
+void setZeroLocation(){
+  row = 0;
+  col = 0;
+}
+
+void emptyBuffer(){
+    for (uint32_t i = 0; i < 256; i++) {
+        keyboard_state.keyboard_buffer[i] = '\0';
+    }
 }

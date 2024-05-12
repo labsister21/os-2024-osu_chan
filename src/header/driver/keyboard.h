@@ -70,4 +70,10 @@ void put_char(char c, uint32_t color);
 
 void puts(char *str, uint32_t count, uint32_t color);
 
+void setZeroLocation();
+
+void emptyBuffer();
+
+
+
 #endif

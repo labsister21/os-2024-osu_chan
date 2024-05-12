@@ -70,4 +70,12 @@ size_t strlen(char *str);
 void clear(void* str, size_t n);
 
 
+void rstrip(char *string);
+
+//ini hanya untuk array berukuran 256 cik
+void deleteSpace(char *string);
+
+
+// int lenArgValidation(char *string);
+
 #endif
