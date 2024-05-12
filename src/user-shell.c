@@ -1,15 +1,6 @@
-#include <stdint.h>
-#include "header/filesystem/fat32.h"
-#include "header/stdlib/string.h"
-
-
-#define WHITE       0b1111
-#define RED         0b1100
-#define GREEN       0b1010
-#define BLUE        0b1001
-
-uint32_t current_directory = ROOT_CLUSTER_NUMBER;
-struct FAT32DirectoryTable dir_table;
+#include "header/user/user-shell.h"
+#include "command/cd.h"
+#include "command/ls.h"
 
 void syscall(uint32_t eax, uint32_t ebx, uint32_t ecx, uint32_t edx) {
     __asm__ volatile("mov %0, %%ebx" : /* <Empty> */ : "r"(ebx));
@@ -83,6 +74,30 @@ int inputparse (char *args_val, int args_info[128][2]) {
 void put(char* str, uint8_t color) {
     syscall(6, (uint32_t) str, strlen(str), color);
 }
+
+bool isPathAbsolute(char* args_val, int (*args_info)[2], int args_pos) {
+    return (memcmp(args_val + (*(args_info + args_pos))[0], "/", 1) == 0);
+}
+
+int findEntryName(char* name) {
+    int result = -1;
+
+    int i = 1;
+    bool found = false;
+    while (i < 64 && !found) {
+        if (memcmp(dir_table.table[i].name, name, 8) == 0 && 
+            dir_table.table[i].user_attribute == UATTR_NOT_EMPTY) {
+            result = i;
+            found = true;
+        }
+        else {
+            i++;
+        }
+    }
+
+    return result;
+}
+
 
 void updateDirectoryTable(uint32_t cluster_number) {
     syscall(6, (uint32_t) &dir_table, cluster_number, 0x0);
@@ -178,10 +193,10 @@ int main(void) {
 
         if(args_count != 0) {
             if ((memcmp(args + *(args_info)[0], "cd", 2) == 0) && ((*(args_info))[1] == 2)) {
-                // cd(args, args_info, args_count);
+                cd(args, args_info, args_count);
                 put("Ini cd\n", WHITE);
             } else if ((memcmp(args + *(args_info)[0], "ls", 2) == 0) && ((*(args_info))[1] == 2)) {
-                // ls(args, args_info, args_count);
+                ls(args, args_info, args_count);
                 put("Ini ls\n", WHITE);
             } else if ((memcmp(args + *(args_info)[0], "mkdir", 5) == 0)&& ((*(args_info))[1] == 5)) {
                 // mkdir(args, args_info, args_count);

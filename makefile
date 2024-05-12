@@ -70,6 +70,8 @@ inserter:
 
 user-shell:
 	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/crt0.s -o crt0.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/command/cd.c -o cd.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/command/ls.c -o ls.o
 	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/user-shell.c -o user-shell.o
 	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/stdlib/string.c -o string.o
 	@$(LIN) -T $(SOURCE_FOLDER)/user-linker.ld -melf_i386 --oformat=binary \
