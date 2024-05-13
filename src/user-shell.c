@@ -235,6 +235,7 @@ void parseCommand(char *buf){
         return;
     }
 
+    int validation;
 
     int len_buf = 0;
 
@@ -324,7 +325,7 @@ void parseCommand(char *buf){
          clear_command();
     }
     else if(memcmp(arg1, "mkdir", 5) == 0){
-        put("ini mkdir\n", WHITE);
+        // put("ini mkdir\n", WHITE);
 
         if(last_arg_1 + 1 == len_buf){
             put("Command Tidak Valid\n", WHITE);
@@ -369,17 +370,37 @@ void parseCommand(char *buf){
 
         counter2 = 0;
 
+        struct FAT32DriverRequest request = {
+            .parent_cluster_number = curr_dir,
+            .buffer_size = 0,
+        };
 
-        put(arg2, WHITE);
-        put("\n", WHITE);
+        memcpy(request.name, arg2, 8);
+        syscall(2, (uint32_t)&request, (uint32_t)&validation, 0);
 
+        clear(arg1, 8);
+        clear(arg2, 8);
+
+        if (validation == 0)
+        {
+            put("Directory Berhasil Dibuat\n", WHITE);
+            return;
+        }
+        else if(validation == 1){
+            put("Directory Sudah Ada Bang\n", WHITE);
+            return;
+        }
+        else
+        {
+            put("Directory Gagal Dibuat\n", WHITE);
+            return;
+        }
     }
     else{
         if(isValidCharacter(arg1[0])){
             put("Command Tidak Valid\n", WHITE);
         }
     }
-
 }
 
 
