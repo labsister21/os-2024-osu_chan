@@ -5,6 +5,7 @@
 #include "helper/clear.h"
 
 uint32_t curr_dir = ROOT_CLUSTER_NUMBER;
+char curr_dir_name[8] = {"root\0\0\0\0"};
 struct FAT32DirectoryTable directory_table;
 
 void syscall(uint32_t eax, uint32_t ebx, uint32_t ecx, uint32_t edx) {
@@ -344,7 +345,6 @@ void parseCommand(char *buf){
             return;
         }
 
-        
         for(int o = start_arg_2; o < len_buf; o++){
             if(buf[o] == ' '){
                 last_arg_2 = o - 1;
@@ -353,6 +353,15 @@ void parseCommand(char *buf){
 
             if(o == (len_buf - 1)){
                 last_arg_2 = len_buf - 1;
+            }
+        }
+
+        if((last_arg_1 + 1) < len_buf){
+            for(int p = last_arg_2 + 1; p < len_buf; p++){
+                if(buf[p] != ' '){
+                    put("Command Tidak Valid\n", WHITE);
+                    return;
+                }
             }
         }
 
@@ -395,6 +404,71 @@ void parseCommand(char *buf){
             put("Directory Gagal Dibuat\n", WHITE);
             return;
         }
+    }
+    else if(memcmp(arg1, "ls", 2) == 0){
+
+        if((last_arg_1 + 1) < len_buf){
+            for(int p = last_arg_1 + 1; p < len_buf; p++){
+                if(buf[p] != ' '){
+                    put("Command Tidak Valid\n", WHITE);
+                    return;
+                }
+            }
+        }
+        
+        //bikin request
+        struct FAT32DriverRequest request2 = {
+            .parent_cluster_number = curr_dir,
+            .buffer_size = 0,
+        };
+
+        memcpy(request2.name, curr_dir_name, 8);
+
+        struct FAT32DirectoryTable dir_table;
+
+        struct FAT32DirectoryEntry empty_entry = {0};
+
+        for (uint32_t i = 0; i < CLUSTER_SIZE / sizeof(struct FAT32DirectoryEntry); i++)
+        {
+            dir_table.table[i] = empty_entry;
+        }
+
+        request2.buf = &dir_table;
+
+        syscall(1, (uint32_t)&request2, (uint32_t)&validation, 0);        
+        
+        if(validation == 0){
+
+            for (int i = 2; i < 64; i++)
+            {
+                if (dir_table.table[i].name[0] == '\0')
+                {
+                    break;
+                }
+
+                for (int j = 0; j < 8; j++)
+                {
+                    if (dir_table.table[i].name[j] == '\0')
+                    {
+                        break;
+                    }
+                }
+
+                put(dir_table.table[i].name, WHITE);
+
+                if (!(dir_table.table[i].ext[0] == '\0'))
+                {
+                    put(".", WHITE);
+                    put(dir_table.table[i].ext, WHITE);
+                }
+                put("\n", WHITE);
+            }
+
+        }
+        else{
+            put("Directory Kosong\n", WHITE);
+        }
+        return;
     }
     else{
         if(isValidCharacter(arg1[0])){
