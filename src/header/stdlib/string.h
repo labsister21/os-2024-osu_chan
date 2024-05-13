@@ -59,7 +59,7 @@ void *memmove(void *dest, const void *src, size_t n);
  * 
  * @return Length of the string
 */
-size_t strlen(char *str);
+int strlen(char *str);
 
 /**
  * Empties a string up to the length n

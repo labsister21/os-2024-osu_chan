@@ -79,6 +79,10 @@ void syscall(struct InterruptFrame frame) {
         case 0:
             *((int8_t*) frame.cpu.general.ecx) = read(*(struct FAT32DriverRequest*) frame.cpu.general.ebx);
             break;
+        case 2:
+            struct FAT32DriverRequest request = *(struct FAT32DriverRequest*) frame.cpu.general.ebx;
+            *((int*) frame.cpu.general.ecx) = write(request);
+            break;
         case 4:
             // emptyBuffer();
             keyboard_state_activate();
@@ -108,6 +112,12 @@ void syscall(struct InterruptFrame frame) {
             framebuffer_clear();
             setZeroLocation();
             framebuffer_set_cursor(0, 0);
+            break;
+        case 9:
+            read_clusters((struct FAT32DirectoryTable*) frame.cpu.general.ebx, frame.cpu.general.ecx, 1);
+            break;
+        case 10:
+            emptyBuffer();
             break;
     }
 }

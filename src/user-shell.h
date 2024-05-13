@@ -13,4 +13,10 @@ void put(char* str, uint8_t color);
 
 void parseCommand(char* buf);
 
+bool isValidCharacter(char random_char);
+
+void PWD(char *path, uint32_t curr_dir);
+
+void loadingScreen();
+
 #endif

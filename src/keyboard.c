@@ -345,7 +345,7 @@ void keyboard_isr(void)
       else if (hasil_map == '\n')
       {
         keyboard_state.index = 0;
-        puts(&hasil_map, 1, 0xF);
+        puts("\n", 1, 0xF);
         keyboard_state.keyboard_input_on = 0;
       }
       else

@@ -44,8 +44,8 @@ void *memmove(void *dest, const void *src, size_t n) {
     return dest;
 }
 
-size_t strlen(char *str) {
-    size_t i = 0;
+int strlen(char *str) {
+    int i = 0;
     while (str[i] != '\0'){
         i++;
     }
@@ -76,7 +76,7 @@ void deleteSpace(char *string){
 
     for(size_t k = 0 ; k < 2048 ;k++){
         if(string[k] == ' '){
-                string[k] = '\0';
+            string[k] = '\0';
         }
     }
 
