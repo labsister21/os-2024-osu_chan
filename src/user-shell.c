@@ -29,7 +29,7 @@ bool isValidCharacter(char random_char) {
         'h', 'j', 'k', 'l', ';', '\'', '`','\\', 'z', 'x', 'c', 
         'v', 'b', 'n', 'm', ',', ' ','.', '/', '*'};
 
-    for (int i = 0; i < 52 ; i++){
+    for (int i = 0; i < 51 ; i++){
         if(validChars[i] == random_char){
             return true;
             break;
