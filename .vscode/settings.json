@@ -58,20 +58,6 @@
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
-    "kernel-entrypoint.h": "c",
-    "gdt.h": "c",
-    "user-shell.h": "c",
-    "string.h": "c",
-    "portio.h": "c",
-    "interrupt.h": "c",
-    "process.h": "c",
-    "stdbool.h": "c",
-    "stdint.h": "c",
-    "paging.h": "c",
-    "stddef.h": "c",
-    "context.h": "c",
-    "types.h": "c",
-    "math.h": "c"
-  },
-  "C_Cpp.errorSquiggles": "enabled"
+    "kernel-entrypoint.h": "c"
+  }
 }
