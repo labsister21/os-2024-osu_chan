@@ -187,8 +187,9 @@ bool paging_free_page_directory(struct PageDirectory *page_dir) {
     uint32_t i = 0;
     for( ; i < PAGING_DIRECTORY_TABLE_MAX_COUNT; i++){
         if(&page_directory_list[i] == page_dir) {
+            page_directory_manager.page_directory_used[i] = false;
             struct PageDirectory empty_directory = {0};
-            page_directory_list[i] = empty_directory;
+            *page_dir = empty_directory;
             return true;
         }
     }
