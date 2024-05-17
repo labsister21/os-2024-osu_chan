@@ -79,11 +79,25 @@ void syscall(struct InterruptFrame frame) {
         case 0:
             *((int8_t*) frame.cpu.general.ecx) = read(*(struct FAT32DriverRequest*) frame.cpu.general.ebx);
             break;
+        case 1:
+            struct FAT32DriverRequest request2 = *(struct FAT32DriverRequest *)frame.cpu.general.ebx;
+            *((int8_t *)frame.cpu.general.ecx) = read_directory(request2);
+            break;
+        case 2:
+            struct FAT32DriverRequest request = *(struct FAT32DriverRequest *) frame.cpu.general.ebx;
+            *((int8_t *)frame.cpu.general.ecx) = write(request);
+            break;
         case 4:
             keyboard_state_activate();
             __asm__("sti");
             while (is_keyboard_blocking());
             char buf[256];
+
+            //mengosongkan buf
+            for(int i = 0; i < 256; i++){
+                buf[i] = '\0';
+            }
+            
             get_keyboard_buffer(buf);
             memcpy((char*) frame.cpu.general.ebx, buf, frame.cpu.general.ecx);
             break;
@@ -99,6 +113,11 @@ void syscall(struct InterruptFrame frame) {
             break;
         case 7: 
             keyboard_state_activate();
+            break;
+        case 8:
+            framebuffer_clear();
+            setZeroLocation();
+            framebuffer_set_cursor(0, 0);
             break;
     }
 }
