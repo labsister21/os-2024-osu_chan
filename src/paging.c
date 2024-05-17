@@ -10,7 +10,9 @@ __attribute__((aligned(0x1000))) static struct PageDirectory page_directory_list
 
 static struct {
     bool page_directory_used[PAGING_DIRECTORY_TABLE_MAX_COUNT];
-} page_directory_manager = {
+} 
+
+page_directory_manager = {
     .page_directory_used = {false},
 };
 

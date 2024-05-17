@@ -3,8 +3,35 @@
 #include "header/stdlib/string.h"
 #include "header/cpu/gdt.h"
 #include "header/process/context.h"
+#include "header/interrupt/interrupt.h"
+#include "header/math/math.h"
 
 
+static struct {
+    int active_process_count;
+} 
+
+process_manager_state = {
+    .active_process_count = 0,
+};
+
+
+uint32_t process_list_get_inactive_index(){
+    int i = 0;    
+    for(; i < PROCESS_COUNT_MAX; i++){
+        if(_process_list[i].metadata.process_state == INACTIVE){
+            process_manager_state.active_process_count++;
+            return i;
+        }
+    }
+    return 17;
+}
+
+
+uint32_t process_generate_new_pid(){
+    static int last_assigned_pid = 0;
+    return ++last_assigned_pid;
+}
 
 int32_t process_create_user_process(struct FAT32DriverRequest request) {
     int32_t retcode = PROCESS_CREATE_SUCCESS; 
@@ -27,7 +54,7 @@ int32_t process_create_user_process(struct FAT32DriverRequest request) {
     }
 
     // Process PCB 
-    int32_t p_index = process_list_get_inactive_index();
+    uint32_t p_index = process_list_get_inactive_index();
     struct ProcessControlBlock *new_pcb = &(_process_list[p_index]);
 
     new_pcb->metadata.pid = process_generate_new_pid();

@@ -1,4 +1,3 @@
-
 #include "../interrupt/interrupt.h"
 #include "../memory/paging.h"
 #include "process.h"
@@ -11,20 +10,30 @@
  * @param eflags                      Flag register to load before resuming the execution
  * @param page_directory_virtual_addr CPU register CR3, containing pointer to active page directory
  */
+
+/**
+ * Contain information needed for task to be able to get interrupted and resumed later
+ *
+ * @param cpu                         All CPU register state
+ * @param eip                         CPU instruction counter to resume execution
+ * @param eflags                      Flag register to load before resuming the execution
+ * @param page_directory_virtual_addr CPU register CR3, containing pointer to active page directory
+ */
 struct Context {
-    CPURegister cpu;
+    // TODO: Add important field here
+    struct CPURegister cpu;
     uint32_t eip;
     uint32_t eflags;
-    PageDirectory* page_directory_virtual_addr;
+    struct PageDirectory* page_directory_virtual_addr;
 };
+
 
 typedef enum PROCESS_STATE {
     // TODO: Add process states
     READY,
     BLOCK,
     RUN,
-    TERMINATE,
-    NEW,
+    INACTIVE,
 } PROCESS_STATE;
 
 /**
@@ -35,9 +44,9 @@ typedef enum PROCESS_STATE {
  * @param memory   Memory used for the process
  */
 struct ProcessControlBlock {
+    struct Context context;
     struct {
         uint32_t pid;
-        Context context;
         PROCESS_STATE process_state;
     } metadata;
 
@@ -47,9 +56,5 @@ struct ProcessControlBlock {
     } memory;
 };
 
-ProcessControlBlock _process_list[PROCESS_COUNT_MAX];
+static struct ProcessControlBlock _process_list[PROCESS_COUNT_MAX];
 
-
-static process_manager_state = {
-    .active_process_count = 0,
-};
