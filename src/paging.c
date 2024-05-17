@@ -56,11 +56,6 @@ void flush_single_tlb(void *virtual_addr) {
 }
 
 
-
-
-
-
-
 /* --- Memory Management --- */
 // TODO: Implement
 bool paging_allocate_check(uint32_t amount) {
@@ -149,7 +144,34 @@ struct PageDirectory* paging_create_new_page_directory(void) {
      * - Set page_directory.table[0x300] with kernel page directory entry
      * - Return the page directory address
      */ 
-    return NULL;
+    uint32_t i = 0;
+    for(; i < PAGING_DIRECTORY_TABLE_MAX_COUNT; i++){
+        if(page_directory_manager.page_directory_used[i] == false){
+            page_directory_manager.page_directory_used[i] = true;
+            break;
+        }
+    }
+
+    __attribute__((aligned(0x1000))) struct PageDirectory new_page_directory = {
+        .table = {
+            [0] = {
+                .flag.present_bit       = 1,
+                .flag.write_bit         = 1,
+                .flag.use_pagesize_4_mb = 1,
+                .lower_address          = 0,
+            },
+            [0x300] = {
+                .flag.present_bit       = 1,
+                .flag.write_bit         = 1,
+                .flag.use_pagesize_4_mb = 1,
+                .lower_address          = 0,
+            }
+        }
+    };
+
+    page_directory_list[i] = new_page_directory;
+
+    return &(page_directory_list[i]);
 }
 
 bool paging_free_page_directory(struct PageDirectory *page_dir) {
@@ -159,6 +181,15 @@ bool paging_free_page_directory(struct PageDirectory *page_dir) {
      * - If matches, mark the page directory as unusued and clear all page directory entry
      * - Return true
      */
+
+    uint32_t i = 0;
+    for( ; i < PAGING_DIRECTORY_TABLE_MAX_COUNT; i++){
+        if(&page_directory_list[i] == page_dir) {
+            struct PageDirectory empty_directory = {0};
+            page_directory_list[i] = empty_directory;
+            return true;
+        }
+    }
     return false;
 }
 

@@ -40,16 +40,16 @@ int main(void) {
                     cd(&cwd, command[1]);
                 }
             }
-            else if(memcmp(command[0], "ls", 2) == 0){
+            else if(memcmp(command[0], "ls", 5) == 0){
                 put("ini ls\n", WHITE);
             }
-            else if(memcmp(command[0], "mkdir", 2) == 0){
+            else if(memcmp(command[0], "mkdir", 5) == 0){
                 put("ini mkdir\n", WHITE);
                 if (args >= 2){
                     mkdir(cwd, command[1]);
                 }
             }
-            else if(memcmp(command[0], "clear", 2) == 0){
+            else if(memcmp(command[0], "clear", 5) == 0){
                 syscall(8, 0, 0, 0);
             }
             else{

@@ -2,6 +2,7 @@
 #include "header/memory/paging.h"
 #include "header/stdlib/string.h"
 #include "header/cpu/gdt.h"
+#include "header/process/context.h"
 
 
 
