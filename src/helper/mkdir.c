@@ -12,6 +12,7 @@ void mkdir(char * dir_name){
     };
 
     memcpy(request.name, dir_name, 8);
+    
     memcpy(request.nama_bapak, current_working_directory_name_stat, 8);
 
     syscall(2, (uint32_t)&request, (uint32_t)&retcode, 0);

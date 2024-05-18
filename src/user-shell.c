@@ -19,6 +19,8 @@ int main(void) {
         }
 
         put("IF2024@OSu_chan:", WHITE);
+        cwd();
+        put("$ ", WHITE);
         syscall(4, (uint32_t)buf, 2048, 0);
 
         int args = strparse(buf, command, " ");
