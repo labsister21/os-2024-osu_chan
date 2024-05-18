@@ -6,6 +6,6 @@
 #include "../header/text/framebuffer.h"
 #include "../header/stdlib/string.h"
 
-void cd(struct CurrentWorkingDirectory *cwd, char *dir_name);
+void cd(char * dir_name);
 
 #endif

@@ -5,8 +5,8 @@
 #include "../header/filesystem/fat32.h"
 #include "../header/text/framebuffer.h"
 #include "../header/stdlib/string.h"
-#include "../header/stdlib/string.h"
 
-void mkdir(struct CurrentWorkingDirectory cwd, char *folder_name);
+
+void mkdir(char * dir_name);
 
 #endif

@@ -4,18 +4,12 @@
 #include "helper/pwd.h"
 #include "helper/mkdir.h"
 #include "helper/cd.h"
-
+#include "helper/ls.h"
 
 int main(void) {
 
     char command[12][128];
     char buf[2048];
-
-    struct CurrentWorkingDirectory cwd = {
-        .clusters_stack = {2},
-        .dir_names = {"root\0\0\0\0"},
-        .top = 0,
-    };
 
     while(true){
 
@@ -25,28 +19,52 @@ int main(void) {
         }
 
         put("IF2024@OSu_chan:", WHITE);
+        cwd();
+        put("$ ", WHITE);
         syscall(4, (uint32_t)buf, 2048, 0);
 
         int args = strparse(buf, command, " ");
 
         if(args > 0){
 
-            put(command[0], WHITE);
-
-            put("\n", WHITE);
-
             if(memcmp(command[0], "cd", 2) == 0){
-                if (args >= 2){
-                    cd(&cwd, command[1]);
+                if(args < 1){
+                    put("Command Tidak Valid\n", WHITE);
+                }
+                else if(args == 2){
+                    if(strlen(command[1]) > 8){
+                        put("Nama Folder Terlalu Panjang\n", WHITE);
+                    }
+                    else{
+                        cd(command[1]);
+                    }
+                }
+                else{
+                    put("Command Tidak Valid\n", WHITE);
                 }
             }
-            else if(memcmp(command[0], "ls", 5) == 0){
-                put("ini ls\n", WHITE);
+
+            else if(memcmp(command[0], "ls", 2) == 0){
+                if(args > 1){
+                    put("Command Tidak Valid\n", WHITE);
+                    continue;;
+                }
+                ls();
             }
             else if(memcmp(command[0], "mkdir", 5) == 0){
-                put("ini mkdir\n", WHITE);
-                if (args >= 2){
-                    mkdir(cwd, command[1]);
+                if(args < 1){
+                    put("Command Tidak Valid\n", WHITE);
+                }
+                else if(args == 2){
+                    if(strlen(command[1]) > 8){
+                        put("Nama Folder Terlalu Panjang\n", WHITE);
+                    }
+                    else{
+                        mkdir(command[1]);
+                    }
+                }
+                else{
+                    put("Command Tidak Valid\n", WHITE);
                 }
             }
             else if(memcmp(command[0], "clear", 5) == 0){
