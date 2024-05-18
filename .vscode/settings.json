@@ -58,6 +58,18 @@
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
-    "kernel-entrypoint.h": "c"
+    "kernel-entrypoint.h": "c",
+    "math.h": "c",
+    "stdio.h": "c",
+    "interrupt.h": "c",
+    "context.h": "c",
+    "assert.h": "c",
+    "stdint.h": "c",
+    "paging.h": "c",
+    "stdbool.h": "c",
+    "process.h": "c",
+    "fat32.h": "c",
+    "string.h": "c",
+    "disk.h": "c"
   }
 }

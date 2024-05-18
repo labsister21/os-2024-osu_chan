@@ -155,25 +155,24 @@ struct PageDirectory* paging_create_new_page_directory(void) {
     }
 
     __attribute__((aligned(0x1000))) struct PageDirectory new_page_directory = {
-        .table = {
-            [0] = {
-                .flag.present_bit       = 1,
-                .flag.write_bit         = 1,
-                .flag.use_pagesize_4_mb = 1,
-                .lower_address          = 0,
-            },
-            [0x300] = {
-                .flag.present_bit       = 1,
-                .flag.write_bit         = 1,
-                .flag.use_pagesize_4_mb = 1,
-                .lower_address          = 0,
+    .table = {
+        [0] = {
+            .flag.present_bit       = 1,
+            .flag.write_bit         = 1,
+            .flag.use_pagesize_4_mb = 1,
+            .lower_address          = 0,
+        },
+        [0x300] = {
+            .flag.present_bit       = 1,
+            .flag.write_bit         = 1,
+            .flag.use_pagesize_4_mb = 1,
+            .lower_address          = 0,
             }
         }
     };
 
-    page_directory_list[i] = new_page_directory;
-
-    return &(page_directory_list[i]);
+    struct PageDirectory* temp = &new_page_directory;
+    return temp;
 }
 
 bool paging_free_page_directory(struct PageDirectory *page_dir) {

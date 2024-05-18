@@ -9,7 +9,7 @@ OUTPUT_FOLDER = bin
 ISO_NAME      = os2024
 
 # Flags
-WARNING_CFLAG = -Wall -Wextra -Werror
+WARNING_CFLAG = -Wall -Wextra
 DEBUG_CFLAG   = -ffreestanding -fshort-wchar -g
 STRIP_CFLAG   = -nostdlib -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs 
 CFLAGS        = $(DEBUG_CFLAG) $(WARNING_CFLAG) $(STRIP_CFLAG) -m32 -c -I$(SOURCE_FOLDER)

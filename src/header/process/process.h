@@ -9,6 +9,7 @@
 #include "header/memory/paging.h"
 #include "header/filesystem/fat32.h"
 
+
 #define PROCESS_NAME_LENGTH_MAX          32
 #define PROCESS_PAGE_FRAME_COUNT_MAX     8
 #define PROCESS_COUNT_MAX                16
@@ -73,5 +74,7 @@ int32_t process_create_user_process(struct FAT32DriverRequest request);
  * @return    True if process destruction success
  */
 bool process_destroy(uint32_t pid);
+
+void init_process_list();
 
 #endif

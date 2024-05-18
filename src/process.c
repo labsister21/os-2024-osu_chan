@@ -1,11 +1,17 @@
-#include "header/process/process.h"
 #include "header/memory/paging.h"
 #include "header/stdlib/string.h"
 #include "header/cpu/gdt.h"
-#include "header/process/context.h"
 #include "header/interrupt/interrupt.h"
 #include "header/math/math.h"
+#include "header/process/context.h"
 
+struct ProcessControlBlock new_process = {
+    .metadata = {
+        .process_state = INACTIVE,
+    }
+};
+
+struct ProcessControlBlock _process_list[PROCESS_COUNT_MAX] = {0};
 
 static struct {
     int active_process_count;
@@ -15,6 +21,13 @@ process_manager_state = {
     .active_process_count = 0,
 };
 
+void init_process_list(){
+    int i = 0;
+    new_process.context.page_directory_virtual_addr = &_paging_kernel_page_directory;
+    for(; i < PROCESS_COUNT_MAX; i++){
+        _process_list[i] = new_process;
+    }
+}
 
 uint32_t process_list_get_inactive_index(){
     int i = 0;    
@@ -30,7 +43,7 @@ uint32_t process_list_get_inactive_index(){
 
 uint32_t process_generate_new_pid(){
     static int last_assigned_pid = 0;
-    return ++last_assigned_pid;
+    return last_assigned_pid++;
 }
 
 int32_t process_create_user_process(struct FAT32DriverRequest request) {

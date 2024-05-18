@@ -1,6 +1,9 @@
+#ifndef _CONTEXT_H
+#define _CONTEXT_H
+
 #include "../interrupt/interrupt.h"
 #include "../memory/paging.h"
-#include "process.h"
+#include "../process/process.h"
 
 /**
  * Contain information needed for task to be able to get interrupted and resumed later
@@ -56,5 +59,12 @@ struct ProcessControlBlock {
     } memory;
 };
 
-static struct ProcessControlBlock _process_list[PROCESS_COUNT_MAX];
+// struct ProcessManagerState {
+//     struct ProcessControlBlock _process_list[PROCESS_COUNT_MAX];
+//     uint32_t active_process_count;
+    
+// } __attribute__((packed));
 
+extern struct ProcessControlBlock _process_list[PROCESS_COUNT_MAX];
+
+# endif
