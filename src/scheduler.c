@@ -62,44 +62,27 @@ extern void save_current_context(struct Context* ctx);
 
 // Implementation of save_current_context function
 void save_current_context(struct Context* ctx) {
-  // Save general-purpose registers
-  __asm__ volatile (
-    "movl %%ebx, %0\n"  // Check constraint for your architecture (e.g., "=m")
-    "movl %%edx, %1\n"  // Check constraint for your architecture (e.g., "=m")
-    "movl %%ecx, %2\n"  // Check constraint for your architecture (e.g., "=m")
-    "movl %%eax, %3\n"  // Check constraint for your architecture (e.g., "=m")
-    "movl %%esi, %4\n"  // Check constraint for your architecture (e.g., "=m")
-    "movl %%edi, %5\n"  // Check constraint for your architecture (e.g., "=m")
-    "movl %%ebp, %6\n"  // Check constraint for your architecture (e.g., "=m")
-    "movl %%esp, %7\n"  // Check constraint for your architecture (e.g., "=m")
-    : "=m" (ctx->cpu.general.ebx),
-      "=m" (ctx->cpu.general.edx),
-      "=m" (ctx->cpu.general.ecx),
-      "=m" (ctx->cpu.general.eax),
-      "=m" (ctx->cpu.index.esi),
-      "=m" (ctx->cpu.index.edi),
-      "=m" (ctx->cpu.stack.ebp),
-      "=m" (ctx->cpu.stack.esp)
-  );
 
-  // Save segment registers (fixed constraint)
-  __asm__ volatile (
-    "movl %%gs, (=m) %0\n"  // Use "=m" for memory operand (or "=S" if applicable)
-    "movl %%fs, (=m) %1\n"
-    "movl %%es, (=m) %2\n"
-    "movl %%ds, (=m) %3\n"
-    : "=m" (ctx->cpu.segment.gs),
-      "=m" (ctx->cpu.segment.fs),
-      "=m" (ctx->cpu.segment.es),
-      "=m" (ctx->cpu.segment.ds)
-  );
+  __asm__  volatile("movl %%ebx, %0" :  "=D" (ctx->cpu.general.ebx) : /* <Empty> */ : "memory");
+  __asm__  volatile("movl %%edx, %0" :  "=D" (ctx->cpu.general.edx) : /* <Empty> */ : "memory");
+  __asm__  volatile("movl %%ecx, %0" :  "=D" (ctx->cpu.general.ecx) : /* <Empty> */ : "memory");
+  __asm__  volatile("movl %%eax, %0" :  "=D" (ctx->cpu.general.eax) : /* <Empty> */ : "memory");
+  __asm__  volatile("movl %%esi, %0" :  "=D" (ctx->cpu.index.esi) : /* <Empty> */ : "memory");
+  __asm__  volatile("movl %%edi, %0" :  "=D" (ctx->cpu.index.edi) : /* <Empty> */ : "memory");
+  __asm__  volatile("movl %%ebp, %0" :  "=D" (ctx->cpu.stack.ebp) : /* <Empty> */ : "memory");
+  __asm__  volatile("movl %%esp, %0" :  "=D" (ctx->cpu.stack.esp) : /* <Empty> */ : "memory");
+  __asm__  volatile("movl %%gs, %0" :  "=D" (ctx->cpu.segment.gs) : /* <Empty> */ : "memory");
+  __asm__  volatile("movl %%fs, %0" :  "=D" (ctx->cpu.segment.fs) : /* <Empty> */ : "memory");
+  __asm__  volatile("movl %%es, %0" :  "=D" (ctx->cpu.segment.es) : /* <Empty> */ : "memory");
+  __asm__  volatile("movl %%ds, %0" :  "=D" (ctx->cpu.segment.ds) : /* <Empty> */ : "memory");
+
 
   // Save flags and instruction pointer (fixed constraint)
   __asm__ volatile (
     "pushfl\n"
     "popl %0\n"
     "call 1f\n"
-    "1: popl (=m) %1\n"
+    "1: popl %1\n"
      : "=m" (ctx->eflags),
        "=m" (ctx->eip)
   );
