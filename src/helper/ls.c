@@ -37,7 +37,14 @@ void ls(){
             if (dir_table.table[i].name[0] != '\0')
             {    
 
-                put(dir_table.table[i].name, WHITE);
+                char intermediate_name[10];
+
+                clear(intermediate_name, 10);
+
+                memcpy(intermediate_name, dir_table.table[i].name, 8);
+                
+                //ada kasus aneh dengan file
+                put(intermediate_name, WHITE);
 
                 if (!(dir_table.table[i].ext[0] == '\0'))
                 {

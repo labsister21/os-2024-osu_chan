@@ -35,7 +35,7 @@ void rm(char *nama){
 
         memcpy(request_delete_file.name, string_sep_dot[0], 8);
         memcpy(request_delete_file.ext, string_sep_dot[1], 3);
-
+        
         syscall(3, (uint32_t)&request_delete_file, (uint32_t)&retcode_delete_file, 0);  
 
         if(retcode_delete_file == 0){

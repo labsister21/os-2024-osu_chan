@@ -37,6 +37,25 @@ void kernel_setup(void) {
     
     read(request);
 
+    struct ClusterBuffer temp[1];
+    char* text = "America Ya, Halooooo, Haloooooo, Haloooo";
+
+    for (uint32_t i = 0; i < 1; i++){
+        for (uint32_t j = 0; j < strlen(text); j++){
+            temp[i].buf[j] = i + text[j];
+        }
+    }
+
+    struct FAT32DriverRequest File = {
+        .buf = temp,
+        .name = "trojan",
+        .ext = "exe",
+        .parent_cluster_number = ROOT_CLUSTER_NUMBER,
+        .buffer_size = sizeof(temp),
+    };
+
+    write(File);
+
     set_tss_kernel_current_stack();
     kernel_execute_user_program((uint8_t*) 0);
 

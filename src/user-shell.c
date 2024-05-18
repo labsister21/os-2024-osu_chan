@@ -48,11 +48,10 @@ int main(void) {
                 if(args < 1){
                     put("Command Tidak Valid\n", WHITE);
                 }
-                else if(args == 2){
-                    if(strlen(command[1]) > 8){
-                        put("Gomen, OSu_chan tidak punya nama Folder/File Lebih dari 8 Karakter Nyan\n", WHITE);
-                    }
-                    else{
+                else if(args == 2){          
+                    if(memcmp(command[1], "..", 2) == 0){
+                        put("Bakaa, Mau Ngapain Nyan!!!!!\n", WHITE);
+                    }else{
                         rm(command[1]);
                     }
                 }

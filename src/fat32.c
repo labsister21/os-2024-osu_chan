@@ -295,13 +295,13 @@ int8_t read(struct FAT32DriverRequest request)
     read_clusters(driver_state.dir_table_buf.table, request.parent_cluster_number, 1);
 
     // kalau entry root gak valid yaudah
-    if (driver_state.dir_table_buf.table[0].user_attribute == UATTR_NOT_EMPTY)
+    if (driver_state.dir_table_buf.table[0].user_attribute == UATTR_NOT_EMPTY && driver_state.dir_table_buf.table[0].attribute == ATTR_SUBDIRECTORY )
     {
 
         read_clusters(driver_state.fat_table.cluster_map, FAT_CLUSTER_NUMBER, 1);
 
         // bool is_directory = false;
-        for (int i = 0; (int)(sizeof(driver_state.dir_table_buf) / sizeof(struct FAT32DirectoryEntry)); i++)
+        for (int i = 0;(int)(CLUSTER_SIZE / sizeof(struct FAT32DirectoryEntry)); i++)
         {
 
             // kalau misalkan nama file + ekstensinya cocok, hmm tapi gimana kalau file binary, kayak chall??? ini pikirin nanti lah ya
@@ -327,7 +327,7 @@ int8_t read(struct FAT32DriverRequest request)
                         int pengali_clus = 0;
 
                         // lokasi cluster pertama
-                        int cluster = (driver_state.dir_table_buf.table[i].cluster_high << 16) + driver_state.dir_table_buf.table[i].cluster_low;
+                        uint32_t cluster = driver_state.dir_table_buf.table[i].cluster_high << 16 | driver_state.dir_table_buf.table[i].cluster_low;
 
                         while (cluster != FAT32_FAT_END_OF_FILE)
                         {
@@ -641,7 +641,7 @@ int8_t delete_something(struct FAT32DriverRequest request)
         {
             // kalau ketemu nama dan ekstensinya sama
             if (
-                (memcmp(driver_state.dir_table_buf.table[i].name, request.name, 8) == 0) && (memcmp(driver_state.dir_table_buf.table[i].ext, request.ext, 3) == 0)
+                (memcmp(driver_state.dir_table_buf.table[i].name, request.name, strlen(request.name)) == 0) && (memcmp(driver_state.dir_table_buf.table[i].ext, request.ext, 3) == 0)
             )
             {
 
