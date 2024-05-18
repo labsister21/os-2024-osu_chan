@@ -34,28 +34,20 @@ void ls(){
 
         for (int i = 2; i < 64; i++)
         {
-            if (dir_table.table[i].name[0] == '\0')
+            if (dir_table.table[i].name[0] != '\0')
+            {    
+
+                put(dir_table.table[i].name, WHITE);
+
+                if (!(dir_table.table[i].ext[0] == '\0'))
                 {
-                        break;
+                        put(".", WHITE);
+                        put(dir_table.table[i].ext, WHITE);
                 }
 
-            for (int j = 0; j < 8; j++)
-                {
-                    if (dir_table.table[i].name[j] == '\0')
-                        {
-                            break;
-                        }
-                }
+                put("\n", WHITE);
 
-            put(dir_table.table[i].name, WHITE);
-
-            if (!(dir_table.table[i].ext[0] == '\0'))
-                {
-                    put(".", WHITE);
-                    put(dir_table.table[i].ext, WHITE);
-                }
-
-            put("\n", WHITE);
+            }
         }
     }   
     else{
