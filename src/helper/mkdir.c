@@ -11,6 +11,11 @@ void mkdir(char * dir_name){
         .buffer_size = 0,
     };
 
+    //asumsinya kalau folder itu gak ada ekstensi
+    for(int i = 0; i < 3; i++){
+        request.ext[i] = '\0';
+    }
+
     memcpy(request.name, dir_name, 8);
     
     memcpy(request.nama_bapak, current_working_directory_name_stat, 8);

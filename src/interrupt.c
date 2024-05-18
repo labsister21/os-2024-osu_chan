@@ -87,6 +87,10 @@ void syscall(struct InterruptFrame frame) {
             struct FAT32DriverRequest request = *(struct FAT32DriverRequest *) frame.cpu.general.ebx;
             *((int8_t *)frame.cpu.general.ecx) = write(request);
             break;
+        case 3:
+            struct FAT32DriverRequest request3 = *(struct FAT32DriverRequest *) frame.cpu.general.ebx;
+            *((int8_t *)frame.cpu.general.ecx) = delete_something(request3);
+            break;    
         case 4:
             keyboard_state_activate();
             __asm__("sti");

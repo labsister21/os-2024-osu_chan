@@ -76,11 +76,12 @@ user-shell:
 	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/helper/cd.c -o cd.o
 	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/helper/mkdir.c -o mkdir.o
 	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/helper/ls.c -o ls.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/helper/rm.c -o rm.o
 	@$(LIN) -T $(SOURCE_FOLDER)/user-linker.ld -melf_i386 --oformat=binary \
-		crt0.o user-shell.o mkdir.o ls.o cd.o pwd.o string.o -o $(OUTPUT_FOLDER)/shell
+		crt0.o user-shell.o mkdir.o ls.o cd.o rm.o pwd.o string.o -o $(OUTPUT_FOLDER)/shell
 	@echo Linking object shell object files and generate flat binary...
 	@$(LIN) -T $(SOURCE_FOLDER)/user-linker.ld -melf_i386 --oformat=elf32-i386 \
-		crt0.o user-shell.o pwd.o mkdir.o ls.o cd.o string.o -o $(OUTPUT_FOLDER)/shell_elf
+		crt0.o user-shell.o pwd.o mkdir.o ls.o rm.o cd.o string.o -o $(OUTPUT_FOLDER)/shell_elf
 	@echo Linking object shell object files and generate ELF32 for debugging...
 	@size --target=binary $(OUTPUT_FOLDER)/shell
 	@rm -f *.o

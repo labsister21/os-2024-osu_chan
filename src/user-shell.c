@@ -5,6 +5,7 @@
 #include "helper/mkdir.h"
 #include "helper/cd.h"
 #include "helper/ls.h"
+#include "helper/rm.h"
 
 int main(void) {
 
@@ -43,7 +44,22 @@ int main(void) {
                     put("Command Tidak Valid\n", WHITE);
                 }
             }
-
+            else if(memcmp(command[0], "rm", 2) == 0){
+                if(args < 1){
+                    put("Command Tidak Valid\n", WHITE);
+                }
+                else if(args == 2){
+                    if(strlen(command[1]) > 8){
+                        put("Gomen, OSu_chan tidak punya nama Folder/File Lebih dari 8 Karakter Nyan\n", WHITE);
+                    }
+                    else{
+                        rm(command[1]);
+                    }
+                }
+                else{
+                    put("Command Tidak Valid\n", WHITE);
+                }
+            }
             else if(memcmp(command[0], "ls", 2) == 0){
                 if(args > 1){
                     put("Command Tidak Valid\n", WHITE);
