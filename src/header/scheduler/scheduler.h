@@ -2,6 +2,8 @@
 #define _SCHEDULER_H
 
 #include "header/process/process.h"
+#include "header/interrupt/interrupt.h"
+#include "header/process/context.h"
 
 /**
  * Read all general purpose register values and set control register.
