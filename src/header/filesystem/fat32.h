@@ -132,6 +132,7 @@ struct FAT32DriverState {
 struct FAT32DriverRequest {
     void     *buf;
     char      name[8];
+    char      nama_bapak[8];
     char      ext[3];
     uint32_t  parent_cluster_number;
     uint32_t  buffer_size;
