@@ -29,6 +29,10 @@ void scheduler_init(void);
  */
 void scheduler_save_context_to_current_running_pcb(struct Context ctx);
 
+
+// Forward declaration of save_current_context
+extern void save_current_context(struct Context* ctx);
+
 /**
  * Trigger the scheduler algorithm and context switch to new process
  */
