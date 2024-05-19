@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include "../driver/disk.h"
-
+// #include "../driver/keyboard.h"
 /**
  * FAT32 - IF2230 edition - 2024
  */
@@ -246,6 +246,8 @@ int8_t write(struct FAT32DriverRequest request);
  * @return Error code: 0 success - 1 not found - 2 folder is not empty - -1 unknown
  */
 int8_t delete_something(struct FAT32DriverRequest request);
+
+int8_t read_file(struct FAT32DriverRequest request);
 
 
 #endif

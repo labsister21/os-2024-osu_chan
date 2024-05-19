@@ -142,3 +142,14 @@ int strparse(char *str, char command[12][128], char *delim)
 
     return i;
 };
+
+
+
+int areStringsEqual(const char *str1, const char *str2, size_t length) {
+    for (size_t i = 0; i < length; i++) {
+        if (str1[i] != str2[i]) {
+            return 0;
+        }
+    }
+    return 1;
+}

@@ -38,7 +38,7 @@ void kernel_setup(void) {
     read(request);
 
     struct ClusterBuffer temp[1];
-    char* text = "America Ya, Halooooo, Haloooooo, Haloooo";
+    char* text = "America Ya, Halooooo, Haloooooo, Haloooo\nHere is the list of OSu_chan's nerds:\n1. Panji\n2. Imam\n3. Rici\n4. Francessco\n5. Onodera\n";
 
     for (uint32_t i = 0; i < 1; i++){
         for (uint32_t j = 0; j < strlen(text); j++){

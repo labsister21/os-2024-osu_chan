@@ -44,7 +44,7 @@ void cd(char * dir_name){
 
             }
 
-            put("Berhasil Berpindah ke Directory Bapak\n", WHITE);
+            put("\nBerhasil Berpindah ke Directory Bapak\n\n", WHITE);
 
         }
 
@@ -71,9 +71,9 @@ void cd(char * dir_name){
                             current_working_directory_name_stat[j] = dir_table.table[i].name[j];
                         }
 
-                        put("Berhasil masuk ke directory ", WHITE);
+                        put("\nBerhasil masuk ke directory ", WHITE);
                         put(dir_name, WHITE);
-                        put("\n", WHITE);
+                        put("\n\n", WHITE);
 
                         return;   
 
@@ -82,16 +82,16 @@ void cd(char * dir_name){
                 }
             }
 
-            put("Tidak ada directory bernama ", WHITE);
+            put("\nTidak ada directory bernama ", WHITE);
             put(dir_name, WHITE);
-            put("\n", WHITE);
+            put("\n\n", WHITE);
             return;
         }
     }
     else if(retcode == 1){
-        put("Itu Bukan Directory\n", WHITE);
+        put("\nItu Bukan Directory\n\n", WHITE);
     }
     else{
-        put("Ada Masalah Di Directory\n", WHITE);
+        put("\nAda Masalah Di Directory\n\n", WHITE);
     }
 }

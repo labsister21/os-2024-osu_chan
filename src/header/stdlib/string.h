@@ -77,4 +77,8 @@ char *strtok(char *str, const char *delim);
 int strparse(char *str, char command[12][128], char *delim);
 
 
+
+int areStringsEqual(const char *str1, const char *str2, size_t length);
+
+
 #endif

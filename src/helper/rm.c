@@ -17,21 +17,24 @@ void rm(char *nama){
 
     //kalau lebih besar dari 1 , maksudnya ya 2 dia itu file
     //punya ekstensin misal nguawor.txt
+
     if(many_substring > 1){
+
+        if(strlen(string_sep_dot[0]) > 8){
+            put("Gomen, OSu_chan harusnya tidak punya nama file yang lebih dari 8 karakter :(\n", WHITE);
+            return;
+        }
+
+        if(strlen(string_sep_dot[1]) > 3){
+            put("Gomen, OSu_chan harusnya tidak punya ekstensi yang lebih dari 3 karakter :(\n", WHITE);
+            return;
+        }
  
         int8_t retcode_delete_file;
 
         struct FAT32DriverRequest request_delete_file = {
             .parent_cluster_number = current_working_directory_stat,
         };
-
-        // put("nama file ", WHITE);
-        // put(string_sep_dot[0], WHITE);
-        // put("\n", WHITE);
-
-        // put("ekstensi ", WHITE);
-        // put(string_sep_dot[1], WHITE);
-        // put("\n", WHITE);
 
         memcpy(request_delete_file.name, string_sep_dot[0], 8);
         memcpy(request_delete_file.ext, string_sep_dot[1], 3);
@@ -57,6 +60,11 @@ void rm(char *nama){
 
         if(memcmp(string_sep_dot[0], "shell", 5) == 0){
             put("Shell Gak Boleh Dihapus Nyan\n", WHITE);
+            return;
+        }
+
+        if(strlen(string_sep_dot[0]) > 8){
+            put("Gomen, OSu_chan harusnya tidak punya nama folder yang lebih dari 8 karakter :(\n", WHITE);
             return;
         }
 

@@ -77,7 +77,8 @@ void set_tss_kernel_current_stack(void) {
 void syscall(struct InterruptFrame frame) {
     switch (frame.cpu.general.eax) {
         case 0:
-            *((int8_t*) frame.cpu.general.ecx) = read(*(struct FAT32DriverRequest*) frame.cpu.general.ebx);
+            struct FAT32DriverRequest request4 = *(struct FAT32DriverRequest *)frame.cpu.general.ebx;
+            *((int8_t *)frame.cpu.general.ecx) = read_file(request4);
             break;
         case 1:
             struct FAT32DriverRequest request2 = *(struct FAT32DriverRequest *)frame.cpu.general.ebx;

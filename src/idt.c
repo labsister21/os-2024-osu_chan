@@ -27,7 +27,6 @@ void initialize_idt(void) {
     __asm__ volatile("lidt %0" : : "m"(_idt_idtr));
     __asm__ volatile("sti");
 
-
 }
 
 void set_interrupt_gate(

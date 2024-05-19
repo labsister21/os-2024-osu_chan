@@ -6,6 +6,7 @@
 #include "helper/cd.h"
 #include "helper/ls.h"
 #include "helper/rm.h"
+#include "helper/cat.h"
 
 int main(void) {
 
@@ -29,12 +30,12 @@ int main(void) {
         if(args > 0){
 
             if(memcmp(command[0], "cd", 2) == 0){
-                if(args < 1){
+                if(args < 2){
                     put("Command Tidak Valid\n", WHITE);
                 }
                 else if(args == 2){
                     if(strlen(command[1]) > 8){
-                        put("Nama Folder Terlalu Panjang\n", WHITE);
+                        put("Gomen, Tidak Ada Folder Sepanjang itu atau Mungkin Kamu Masukin Nama File\n", WHITE);
                     }
                     else{
                         cd(command[1]);
@@ -44,8 +45,26 @@ int main(void) {
                     put("Command Tidak Valid\n", WHITE);
                 }
             }
+            else if(memcmp(command[0], "cat", 3) == 0){
+                if(args < 2){
+                    put("Command Tidak Valid\n", WHITE);
+                }
+                else if(args == 2){          
+                    if(memcmp(command[1], "..", 2) == 0){
+                        put("Bakaa, Mau Ngapain Nyan!!!!!\n", WHITE);
+                    }else if(memcmp(command[1], "shell", 5) == 0){
+                        put("Gomen, kalau gak boleh buka itu xixixi\n", WHITE);
+                    }
+                    else{
+                        cat(command[1]);
+                    }
+                }
+                else{
+                    put("Command Tidak Valid\n", WHITE);
+                }
+            }
             else if(memcmp(command[0], "rm", 2) == 0){
-                if(args < 1){
+                if(args < 2){
                     put("Command Tidak Valid\n", WHITE);
                 }
                 else if(args == 2){          
@@ -62,12 +81,13 @@ int main(void) {
             else if(memcmp(command[0], "ls", 2) == 0){
                 if(args > 1){
                     put("Command Tidak Valid\n", WHITE);
-                    continue;;
                 }
-                ls();
+                else {
+                    ls();
+                }
             }
             else if(memcmp(command[0], "mkdir", 5) == 0){
-                if(args < 1){
+                if(args < 2){
                     put("Command Tidak Valid\n", WHITE);
                 }
                 else if(args == 2){

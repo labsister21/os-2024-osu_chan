@@ -353,6 +353,99 @@ int8_t read(struct FAT32DriverRequest request)
     return -1;
 }
 
+int8_t read_file(struct FAT32DriverRequest request)
+{   
+    
+    read_clusters(driver_state.dir_table_buf.table, request.parent_cluster_number, 1);
+
+    // kalau entry root gak valid yaudah
+    if (driver_state.dir_table_buf.table[0].user_attribute == UATTR_NOT_EMPTY && driver_state.dir_table_buf.table[0].attribute == ATTR_SUBDIRECTORY )
+    {
+
+        read_clusters(&driver_state.fat_table, FAT_CLUSTER_NUMBER, 1);
+
+        char temp_nama[10];
+
+        clear(temp_nama, 10);
+
+        char temp_ext[10];
+
+        clear(temp_ext, 10);
+
+        // temp_nama[0] = 't';
+        // temp_nama[1] = 'r';
+        // temp_nama[2] = 'o';
+        // temp_nama[3] = 'j';
+        // temp_nama[4] = 'a';
+        // temp_nama[5] = 'n';
+
+
+        // // bool is_directory = false;
+        for (int i = 2;(int)(CLUSTER_SIZE / sizeof(struct FAT32DirectoryEntry)); i++)
+        {
+            memcpy(temp_nama, request.name, 8);
+            memcpy(temp_ext, request.ext, 3);
+
+        //     // kalau misalkan nama file + ekstensinya cocok, hmm tapi gimana kalau file binary, kayak chall??? ini pikirin nanti lah ya
+            if ((areStringsEqual(driver_state.dir_table_buf.table[i].name, temp_nama, strlen(temp_nama)) == 1))
+            {
+                if((areStringsEqual(driver_state.dir_table_buf.table[i].ext, temp_ext, strlen(temp_ext)) == 1)){
+                    
+                
+
+        //         // kalau ternyata dia directory
+                if (driver_state.dir_table_buf.table[i].attribute == ATTR_SUBDIRECTORY)
+                {
+                    return 1;
+                }
+                else
+                {
+        //             // kalau ukuran dari file nya lebih gedhe dari buffer
+                    if (driver_state.dir_table_buf.table[i].filesize > request.buffer_size)
+                    {
+                        return 2;
+                    }
+                    else
+                    {
+
+                        // kalau ketemu, tinggal ngelakuin iterasi ke FAT table
+                        int pengali_clus = 0;
+
+                        // lokasi cluster pertama
+                        uint32_t cluster = driver_state.dir_table_buf.table[i].cluster_high << 16 | driver_state.dir_table_buf.table[i].cluster_low;
+
+                        while (cluster != FAT32_FAT_END_OF_FILE)
+                        {
+                            // request.buf + cluster_size * pengali itu buat nyari offset untuk setiap kita mau naro cluster di buffer, biar ga ke overwrite
+                            read_clusters(request.buf + CLUSTER_SIZE * pengali_clus, cluster, 1);
+
+                            // baca lokasi cluster berikutnya
+                            cluster = driver_state.fat_table.cluster_map[cluster];
+
+                            pengali_clus += 1;
+                        }
+
+                        return 0;
+ 
+                       }
+                    }
+          
+                }
+            }
+
+            clear(temp_nama, 10);
+            clear(temp_ext, 10);
+
+        // // kalau udah ngelakuin iterasi ke directory table tapi gak ketemu, yaudah
+        }
+
+        return 3;
+    }
+
+    return -1;
+}
+
+
 /**
  * FAT32 write, write a file or folder to file system.
  *
