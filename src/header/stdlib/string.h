@@ -70,4 +70,15 @@ size_t strlen(char *str);
 void clear(void* str, size_t n);
 
 
+char *strchr_custom(const char *str, int character);
+
+char *strtok(char *str, const char *delim);
+
+int strparse(char *str, char command[12][128], char *delim);
+
+
+
+int areStringsEqual(const char *str1, const char *str2, size_t length);
+
+
 #endif

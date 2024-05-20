@@ -72,11 +72,20 @@ user-shell:
 	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/crt0.s -o crt0.o
 	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/user-shell.c -o user-shell.o
 	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/stdlib/string.c -o string.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/helper/pwd.c -o pwd.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/helper/cd.c -o cd.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/helper/mkdir.c -o mkdir.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/helper/ls.c -o ls.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/helper/rm.c -o rm.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/helper/cat.c -o cat.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/helper/find.c -o find.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/helper/cp.c -o cp.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/helper/mv.c -o mv.o
 	@$(LIN) -T $(SOURCE_FOLDER)/user-linker.ld -melf_i386 --oformat=binary \
-		crt0.o user-shell.o string.o -o $(OUTPUT_FOLDER)/shell
+		crt0.o user-shell.o mkdir.o ls.o cp.o mv.o cat.o find.o cd.o rm.o pwd.o string.o -o $(OUTPUT_FOLDER)/shell
 	@echo Linking object shell object files and generate flat binary...
 	@$(LIN) -T $(SOURCE_FOLDER)/user-linker.ld -melf_i386 --oformat=elf32-i386 \
-		crt0.o user-shell.o string.o -o $(OUTPUT_FOLDER)/shell_elf
+		crt0.o user-shell.o pwd.o mkdir.o cp.o mv.o cat.o find.o ls.o rm.o cd.o string.o -o $(OUTPUT_FOLDER)/shell_elf
 	@echo Linking object shell object files and generate ELF32 for debugging...
 	@size --target=binary $(OUTPUT_FOLDER)/shell
 	@rm -f *.o

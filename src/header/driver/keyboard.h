@@ -40,9 +40,6 @@ struct KeyboardDriverState {
 } __attribute((packed));
 
 
-
-
-
 /* -- Driver Interfaces -- */
 
 // Activate keyboard ISR / start listen keyboard & save to buffer
@@ -69,5 +66,7 @@ void put_char(char c, uint32_t color);
 
 
 void puts(char *str, uint32_t count, uint32_t color);
+
+void setZeroLocation();
 
 #endif
