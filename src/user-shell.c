@@ -7,11 +7,15 @@
 #include "helper/ls.h"
 #include "helper/rm.h"
 #include "helper/cat.h"
+#include "helper/find.h"
+#include "helper/cp.h"
+#include "helper/mv.h"
 
 int main(void) {
 
     char command[12][128];
     char buf[2048];
+
 
     while(true){
 
@@ -21,7 +25,7 @@ int main(void) {
         }
 
         put("IF2024@OSu_chan:", WHITE);
-        cwd();
+        // cwd();
         put("$ ", WHITE);
         syscall(4, (uint32_t)buf, 2048, 0);
 
@@ -58,6 +62,39 @@ int main(void) {
                     else{
                         cat(command[1]);
                     }
+                }
+                else{
+                    put("Command Tidak Valid\n", WHITE);
+                }
+            }
+            else if(memcmp(command[0], "find", 4) == 0){
+                if(args < 2){
+                    put("Command Tidak Valid\n", WHITE);
+                }
+                else if(args == 2){       
+                    find(command[1]);
+                }
+                else{
+                    put("Command Tidak Valid\n", WHITE);
+                }
+            }
+            else if(memcmp(command[0], "cp", 2) == 0){
+                if(args < 3){
+                    put("Command Tidak Valid\n", WHITE);
+                }
+                else if(args == 3){       
+                    cp(command[1], command[2]);
+                }
+                else{
+                    put("Command Tidak Valid\n", WHITE);
+                }
+            }
+            else if(memcmp(command[0], "mv", 2) == 0){
+                if(args < 3){
+                    put("Command Tidak Valid\n", WHITE);
+                }
+                else if(args == 3){       
+                    mv(command[1], command[2]);
                 }
                 else{
                     put("Command Tidak Valid\n", WHITE);

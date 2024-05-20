@@ -124,5 +124,14 @@ void syscall(struct InterruptFrame frame) {
             setZeroLocation();
             framebuffer_set_cursor(0, 0);
             break;
+        case 9:
+            struct FAT32DriverRequest request5 = *(struct FAT32DriverRequest *) frame.cpu.general.ebx;
+            *((int8_t *)frame.cpu.general.ecx) = update_directory_table_folder(request5);
+            break;
+
+        case 10:
+            struct FAT32DriverRequest request6 = *(struct FAT32DriverRequest *) frame.cpu.general.ebx;
+            *((int8_t *)frame.cpu.general.ecx) = delete_something2(request6);
+            break;
     }
 }

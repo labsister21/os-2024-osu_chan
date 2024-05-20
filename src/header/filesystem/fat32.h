@@ -133,9 +133,11 @@ struct FAT32DriverRequest {
     void     *buf;
     char      name[8];
     char      nama_bapak[8];
+    char      nama_move[8];
     char      ext[3];
     uint32_t  parent_cluster_number;
     uint32_t  buffer_size;
+    uint32_t  cluster_move;
 } __attribute__((packed));
 
 
@@ -249,5 +251,10 @@ int8_t delete_something(struct FAT32DriverRequest request);
 
 int8_t read_file(struct FAT32DriverRequest request);
 
+int8_t update_directory_table_folder(struct FAT32DriverRequest request);
+
+int8_t delete_folder_source(struct FAT32DriverRequest request);
+
+int8_t delete_something2(struct FAT32DriverRequest request);
 
 #endif
