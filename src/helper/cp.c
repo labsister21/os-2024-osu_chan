@@ -119,15 +119,15 @@ void cp(char * dir_name_source, char * dest_name){
 
             uint32_t temp = dir_table.table[i].cluster_high << 16 | dir_table.table[i].cluster_low;
 
-            char destination_cluster = current_working_directory_stat + '0';
+            // char destination_cluster = current_working_directory_stat + '0';
 
-            put(&destination_cluster, WHITE);
+            // put(&destination_cluster, WHITE);
 
-            put("\n", WHITE);
+            // put("\n", WHITE);
             
-            put(current_working_directory_name_stat, WHITE);
+            // put(current_working_directory_name_stat, WHITE);
 
-            put("\n", WHITE);
+            // put("\n", WHITE);
 
             struct ClusterBuffer cl2 = {0};
 
@@ -164,13 +164,13 @@ void cp(char * dir_name_source, char * dest_name){
 
 
                 
-                put(&destination_cluster, WHITE);
+                // put(&destination_cluster, WHITE);
 
-                put("\n", WHITE);
+                // put("\n", WHITE);
                 
-                put(current_working_directory_name_stat, WHITE);
+                // put(current_working_directory_name_stat, WHITE);
 
-                put("\n", WHITE);
+                // put("\n", WHITE);
                 return;
             }
 
