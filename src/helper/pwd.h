@@ -21,4 +21,6 @@ void reverse_path(const char *path, char *reversed_path);
 
 void cwd_find(uint32_t cur_dir_number_param, char * cur_dir_name_param);
 
+void loading_Screen();
+
 #endif

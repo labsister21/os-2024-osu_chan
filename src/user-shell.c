@@ -16,6 +16,11 @@ int main(void) {
     char command[12][128];
     char buf[2048];
 
+    clear(buf, 2048);
+
+    loading_Screen();
+    syscall(4, (uint32_t)buf, 2048, 0);
+    syscall(8, 0, 0, 0);
 
     while(true){
 
