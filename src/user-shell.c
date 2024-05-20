@@ -47,7 +47,11 @@ int main(void) {
                         put("Gomen, Tidak Ada Folder Sepanjang itu atau Mungkin Kamu Masukin Nama File\n", WHITE);
                     }
                     else{
-                        cd(command[1]);
+                         if(strlen(command[0]) > 2){
+                        put("Command Tidak Valid\n", WHITE);
+                         } else{
+                            cd(command[1]);
+                         }
                     }
                 }
                 else{
@@ -65,7 +69,11 @@ int main(void) {
                         put("Gomen, kalau gak boleh buka itu xixixi\n", WHITE);
                     }
                     else{
-                        cat(command[1]);
+                         if(strlen(command[0]) > 3){
+                        put("Command Tidak Valid\n", WHITE);
+                         } else{
+                            cat(command[1]);
+                         }
                     }
                 }
                 else{
@@ -76,8 +84,12 @@ int main(void) {
                 if(args < 2){
                     put("Command Tidak Valid\n", WHITE);
                 }
-                else if(args == 2){       
-                    find(command[1]);
+                else if(args == 2){  
+                     if(strlen(command[0]) > 4){
+                        put("Command Tidak Valid\n", WHITE);
+                     } else{
+                        find(command[1]);
+                     }
                 }
                 else{
                     put("Command Tidak Valid\n", WHITE);
@@ -87,8 +99,12 @@ int main(void) {
                 if(args < 3){
                     put("Command Tidak Valid\n", WHITE);
                 }
-                else if(args == 3){       
-                    cp(command[1], command[2]);
+                else if(args == 3){
+                     if(strlen(command[0]) > 2){
+                        put("Command Tidak Valid\n", WHITE);
+                     } else{
+                        cp(command[1], command[2]);
+                     }
                 }
                 else{
                     put("Command Tidak Valid\n", WHITE);
@@ -98,8 +114,12 @@ int main(void) {
                 if(args < 3){
                     put("Command Tidak Valid\n", WHITE);
                 }
-                else if(args == 3){       
-                    mv(command[1], command[2]);
+                else if(args == 3){  
+                     if(strlen(command[0]) > 2){
+                        put("Command Tidak Valid\n", WHITE);
+                     } else{
+                        mv(command[1], command[2]);
+                     }     
                 }
                 else{
                     put("Command Tidak Valid\n", WHITE);
@@ -113,7 +133,11 @@ int main(void) {
                     if(memcmp(command[1], "..", 2) == 0){
                         put("Bakaa, Mau Ngapain Nyan!!!!!\n", WHITE);
                     }else{
-                        rm(command[1]);
+                         if(strlen(command[0]) > 2){
+                            put("Command Tidak Valid\n", WHITE);
+                         } else{
+                            rm(command[1]);
+                         }
                     }
                 }
                 else{
@@ -121,11 +145,18 @@ int main(void) {
                 }
             }
             else if(memcmp(command[0], "ls", 2) == 0){
+
+
                 if(args > 1){
                     put("Command Tidak Valid\n", WHITE);
                 }
                 else {
-                    ls();
+
+                    if(strlen(command[0]) > 2){
+                        put("Command Tidak Valid\n", WHITE);
+                    }else{
+                        ls();
+                    }
                 }
             }
             else if(memcmp(command[0], "mkdir", 5) == 0){
@@ -137,7 +168,11 @@ int main(void) {
                         put("Nama Folder Terlalu Panjang\n", WHITE);
                     }
                     else{
-                        mkdir(command[1]);
+                         if(strlen(command[0]) > 5){
+                        put("Command Tidak Valid\n", WHITE);}
+                        else{
+                            mkdir(command[1]);
+                        }
                     }
                 }
                 else{
@@ -145,7 +180,19 @@ int main(void) {
                 }
             }
             else if(memcmp(command[0], "clear", 5) == 0){
-                syscall(8, 0, 0, 0);
+                 if(strlen(command[0]) > 5){
+                        put("Command Tidak Valid\n", WHITE);
+                 } else{
+                    syscall(8, 0, 0, 0);
+                 }
+            }
+            else if (memcmp(command[0],"clock",5) == 0)
+            {
+                 if(strlen(command[0]) > 5){
+                        put("Command Tidak Valid\n", WHITE);
+                 } else{
+                    syscall(11,0,0,0);
+                 }
             }
             else{
                 put("Command Tidak Valid\n", WHITE);

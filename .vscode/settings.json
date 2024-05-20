@@ -63,6 +63,12 @@
     "user-shell.h": "c",
     "string.h": "c",
     "portio.h": "c",
-    "interrupt.h": "c"
+    "interrupt.h": "c",
+    "process.h": "c",
+    "paging.h": "c",
+    "scheduler.h": "c",
+    "fat32.h": "c",
+    "keyboard.h": "c",
+    "context.h": "c"
   }
 }

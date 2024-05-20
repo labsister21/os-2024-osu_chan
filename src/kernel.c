@@ -11,8 +11,8 @@
 #include "header/filesystem/fat32.h"
 #include "header/stdlib/string.h"
 #include "header/memory/paging.h"
-
-
+#include "header/process/context.h"
+#include "header/scheduler/scheduler.h"
 
 void kernel_setup(void) {
     load_gdt(&_gdt_gdtr);
@@ -55,7 +55,7 @@ void kernel_setup(void) {
     };
 
     write(File);
-
+    
     set_tss_kernel_current_stack();
     kernel_execute_user_program((uint8_t*) 0);
 

@@ -6,6 +6,20 @@
 #include "header/filesystem/fat32.h"
 #include "header/text/framebuffer.h"
 #include "header/stdlib/string.h"
+#include "header/cmos/cmos.h"
+#include "header/scheduler/scheduler.h"
+
+void activate_timer_interrupt(void) {
+    __asm__ volatile("cli");
+    // Setup how often PIT fire
+    uint32_t pit_timer_counter_to_fire = PIT_TIMER_COUNTER;
+    out(PIT_COMMAND_REGISTER_PIO, PIT_COMMAND_VALUE);
+    out(PIT_CHANNEL_0_DATA_PIO, (uint8_t) (pit_timer_counter_to_fire & 0xFF));
+    out(PIT_CHANNEL_0_DATA_PIO, (uint8_t) ((pit_timer_counter_to_fire >> 8) & 0xFF));
+
+    // Activate the interrupt
+    out(PIC1_DATA, in(PIC1_DATA) & ~(1 << IRQ_TIMER));
+}
 
 
 void io_wait(void) {
@@ -56,6 +70,9 @@ void main_interrupt_handler(struct InterruptFrame frame) {
             break;
         case 0x30:
             syscall(frame);
+            break;
+        case IRQ_TIMER :
+            // scheduler_isr_handler();
             break;
     }
 }
@@ -132,6 +149,28 @@ void syscall(struct InterruptFrame frame) {
         case 10:
             struct FAT32DriverRequest request6 = *(struct FAT32DriverRequest *) frame.cpu.general.ebx;
             *((int8_t *)frame.cpu.general.ecx) = delete_something2(request6);
+            break;
+        case 11 :
+            while (true)
+            {
+                struct clock c;
+                cmos_read_clock(&c);
+                char front_hour_str = { c.front_hour + '0'};
+                char behind_hour_str = { c.behind_hour + '0'};
+                char front_minute_str = { c.front_minute + '0'};
+                char behind_minute_str = { c.behind_minute + '0'};
+                char front_second_str = { c.front_second + '0'};
+                char behind_second_str = { c.behind_second + '0'};
+                framebuffer_write(24, 72, front_hour_str, 0xFF, 0x00);
+                framebuffer_write(24, 73, behind_hour_str, 0xFF, 0x00);
+                framebuffer_write(24, 74, ':', 0xFF, 0x00);
+                framebuffer_write(24, 75, front_minute_str, 0xFF, 0x00);
+                framebuffer_write(24, 76, behind_minute_str, 0xFF, 0x00);
+                framebuffer_write(24, 77, ':', 0xFF, 0x00);
+                framebuffer_write(24, 78, front_second_str, 0xFF, 0x00);
+                framebuffer_write(24, 79, behind_second_str, 0xFF, 0x00);
+            }
+        
             break;
     }
 }
