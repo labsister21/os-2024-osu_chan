@@ -5,13 +5,9 @@
 #include "header/math/math.h"
 #include "header/process/context.h"
 
-struct ProcessControlBlock new_process = {
-    .metadata = {
-        .process_state = INACTIVE,
-    }
-};
 
 struct ProcessControlBlock _process_list[PROCESS_COUNT_MAX] = {0};
+bool isEmptyPCB = true;
 
 static struct {
     int active_process_count;
@@ -21,18 +17,11 @@ process_manager_state = {
     .active_process_count = 0,
 };
 
-void init_process_list(){
-    int i = 0;
-    new_process.context.page_directory_virtual_addr = &_paging_kernel_page_directory;
-    for(; i < PROCESS_COUNT_MAX; i++){
-        _process_list[i] = new_process;
-    }
-}
-
 uint32_t process_list_get_inactive_index(){
     int i = 0;    
     for(; i < PROCESS_COUNT_MAX; i++){
-        if(_process_list[i].metadata.process_state == INACTIVE){
+        if(_process_list[i].metadata.process_state == INACTIVE || isEmptyPCB){
+            isEmptyPCB = false;
             process_manager_state.active_process_count++;
             return i;
         }
@@ -70,7 +59,47 @@ int32_t process_create_user_process(struct FAT32DriverRequest request) {
     uint32_t p_index = process_list_get_inactive_index();
     struct ProcessControlBlock *new_pcb = &(_process_list[p_index]);
 
-    new_pcb->metadata.pid = process_generate_new_pid();
+    struct ProcessControlBlock temp = {
+    .context = {
+        .cpu = {
+            .general = {
+                .eax = 0,
+                .ebx = 0,
+                .ecx = 0,
+                .edx = 0
+            },
+            .index = {
+                .edi = 0,
+                .esi = 0,
+            },
+            .segment = {
+                .ds = 0x23,
+                .es = 0x23,
+                .fs = 0x23,
+                .gs = 0x23,
+            },
+            .stack = {
+                .ebp = 0,
+                .esp = 0,
+            }
+        },
+        .eflags = CPU_EFLAGS_BASE_FLAG | CPU_EFLAGS_FLAG_INTERRUPT_ENABLE,
+        .eip = 0,
+
+    },
+    .metadata = {
+        .pid = process_generate_new_pid(),
+        .process_state = INACTIVE,
+    },
+    .memory = {
+        .page_frame_used_count = 0,
+        },
+    };
+    *new_pcb = temp;
+    new_pcb->context.page_directory_virtual_addr = paging_create_new_page_directory();
+    paging_use_page_directory(new_pcb->context.page_directory_virtual_addr);
+     paging_allocate_user_page_frame(new_pcb->context.page_directory_virtual_addr, (uint8_t*) 0);
+     read(request);
 
 exit_cleanup:
     return retcode;

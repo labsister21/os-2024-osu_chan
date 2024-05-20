@@ -13,8 +13,8 @@ static int current_running_process_index = -1;
  */
 void scheduler_init(void) {
     // Initialize the process list and activate timer interrupt
-    init_process_list();
     activate_timer_interrupt();
+    pic_ack(IRQ_TIMER);
 }
 
 /**
@@ -34,7 +34,7 @@ void scheduler_save_context_to_current_running_pcb(struct Context ctx) {
 __attribute__((noreturn)) void scheduler_switch_to_next_process(void) {
     int next_process_index = -1;
 
-    // Find the next ready process
+    // Find the next ready process using round-robin
     for (int i = 0; i < PROCESS_COUNT_MAX; i++) {
         int index = (current_running_process_index + 1 + i) % PROCESS_COUNT_MAX;
         if (_process_list[index].metadata.process_state == READY) {
@@ -62,31 +62,30 @@ extern void save_current_context(struct Context* ctx);
 
 // Implementation of save_current_context function
 void save_current_context(struct Context* ctx) {
+    __asm__ volatile("mov %%ebx, %0" : "=m" (ctx->cpu.general.ebx) : : "memory");
+    __asm__ volatile("mov %%edx, %0" : "=m" (ctx->cpu.general.edx) : : "memory");
+    __asm__ volatile("mov %%ecx, %0" : "=m" (ctx->cpu.general.ecx) : : "memory");
+    __asm__ volatile("mov %%eax, %0" : "=m" (ctx->cpu.general.eax) : : "memory");
+    __asm__ volatile("mov %%esi, %0" : "=m" (ctx->cpu.index.esi) : : "memory");
+    __asm__ volatile("mov %%edi, %0" : "=m" (ctx->cpu.index.edi) : : "memory");
+    __asm__ volatile("mov %%ebp, %0" : "=m" (ctx->cpu.stack.ebp) : : "memory");
+    __asm__ volatile("mov %%esp, %0" : "=m" (ctx->cpu.stack.esp) : : "memory");
+    __asm__ volatile("mov %%gs, %0" : "=m" (ctx->cpu.segment.gs) : : "memory");
+    __asm__ volatile("mov %%fs, %0" : "=m" (ctx->cpu.segment.fs) : : "memory");
+    __asm__ volatile("mov %%es, %0" : "=m" (ctx->cpu.segment.es) : : "memory");
+    __asm__ volatile("mov %%ds, %0" : "=m" (ctx->cpu.segment.ds) : : "memory");
 
-  __asm__  volatile("movl %%ebx, %0" :  "=D" (ctx->cpu.general.ebx) : /* <Empty> */ : "memory");
-  __asm__  volatile("movl %%edx, %0" :  "=D" (ctx->cpu.general.edx) : /* <Empty> */ : "memory");
-  __asm__  volatile("movl %%ecx, %0" :  "=D" (ctx->cpu.general.ecx) : /* <Empty> */ : "memory");
-  __asm__  volatile("movl %%eax, %0" :  "=D" (ctx->cpu.general.eax) : /* <Empty> */ : "memory");
-  __asm__  volatile("movl %%esi, %0" :  "=D" (ctx->cpu.index.esi) : /* <Empty> */ : "memory");
-  __asm__  volatile("movl %%edi, %0" :  "=D" (ctx->cpu.index.edi) : /* <Empty> */ : "memory");
-  __asm__  volatile("movl %%ebp, %0" :  "=D" (ctx->cpu.stack.ebp) : /* <Empty> */ : "memory");
-  __asm__  volatile("movl %%esp, %0" :  "=D" (ctx->cpu.stack.esp) : /* <Empty> */ : "memory");
-  __asm__  volatile("movl %%gs, %0" :  "=D" (ctx->cpu.segment.gs) : /* <Empty> */ : "memory");
-  __asm__  volatile("movl %%fs, %0" :  "=D" (ctx->cpu.segment.fs) : /* <Empty> */ : "memory");
-  __asm__  volatile("movl %%es, %0" :  "=D" (ctx->cpu.segment.es) : /* <Empty> */ : "memory");
-  __asm__  volatile("movl %%ds, %0" :  "=D" (ctx->cpu.segment.ds) : /* <Empty> */ : "memory");
-
-
-  // Save flags and instruction pointer (fixed constraint)
-  __asm__ volatile (
-    "pushfl\n"
-    "popl %0\n"
-    "call 1f\n"
-    "1: popl %1\n"
-     : "=m" (ctx->eflags),
-       "=m" (ctx->eip)
-  );
+    // Save flags and instruction pointer (fixed constraint)
+    __asm__ volatile (
+        "pushfl\n"
+        "popl %0\n"
+        "call 1f\n"
+        "1: popl %1\n"
+        : "=m" (ctx->eflags),
+          "=m" (ctx->eip)
+    );
 }
+
 /**
  * Scheduler ISR handler
  * This function will be called by the timer interrupt
@@ -162,4 +161,3 @@ __attribute__((noreturn)) void process_context_switch(struct Context ctx) {
 
     __builtin_unreachable();
 }
-

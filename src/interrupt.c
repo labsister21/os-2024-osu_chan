@@ -7,6 +7,7 @@
 #include "header/text/framebuffer.h"
 #include "header/stdlib/string.h"
 #include "header/cmos/cmos.h"
+#include "header/scheduler/scheduler.h"
 
 void activate_timer_interrupt(void) {
     __asm__ volatile("cli");
@@ -69,6 +70,9 @@ void main_interrupt_handler(struct InterruptFrame frame) {
             break;
         case 0x30:
             syscall(frame);
+            break;
+        case IRQ_TIMER :
+            scheduler_isr_handler();
             break;
     }
 }

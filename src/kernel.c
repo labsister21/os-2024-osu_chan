@@ -56,8 +56,7 @@ void kernel_setup(void) {
     initialize_filesystem_fat32();
     gdt_install_tss();
     set_tss_register();
-
-    // Write shell into memory
+    // Shell request
     struct FAT32DriverRequest request = {
         .buf                   = (uint8_t*) 0,
         .name                  = "shell",
@@ -67,10 +66,14 @@ void kernel_setup(void) {
     };
 
     // Set TSS.esp0 for interprivilege interrupt
+
     set_tss_kernel_current_stack();
 
-    // Create init process and execute it
+    // Create & execute process 0
     process_create_user_process(request);
+    // paging_allocate_user_page_frame(_process_list[0].context.page_directory_virtual_addr, (uint8_t*) 0);
+    // Set TSS.esp0 for interprivilege interrupt
+    kernel_execute_user_program((void*) 0x0);
     scheduler_init();
     scheduler_switch_to_next_process();
 }

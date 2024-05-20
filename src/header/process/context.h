@@ -28,7 +28,7 @@ struct Context {
     uint32_t eip;
     uint32_t eflags;
     struct PageDirectory* page_directory_virtual_addr;
-};
+}__attribute__((packed));
 
 
 typedef enum PROCESS_STATE {
@@ -57,13 +57,8 @@ struct ProcessControlBlock {
         void     *virtual_addr_used[PROCESS_PAGE_FRAME_COUNT_MAX];
         uint32_t page_frame_used_count;
     } memory;
-};
+}__attribute__((packed));
 
-// struct ProcessManagerState {
-//     struct ProcessControlBlock _process_list[PROCESS_COUNT_MAX];
-//     uint32_t active_process_count;
-    
-// } __attribute__((packed));
 
 extern struct ProcessControlBlock _process_list[PROCESS_COUNT_MAX];
 

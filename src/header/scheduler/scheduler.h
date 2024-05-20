@@ -29,6 +29,7 @@ void scheduler_init(void);
  */
 void scheduler_save_context_to_current_running_pcb(struct Context ctx);
 
+void scheduler_isr_handler(void);
 
 // Forward declaration of save_current_context
 extern void save_current_context(struct Context* ctx);
