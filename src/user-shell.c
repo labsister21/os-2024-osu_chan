@@ -70,6 +70,10 @@ int main(void) {
             else if(memcmp(command[0], "clear", 5) == 0){
                 syscall(8, 0, 0, 0);
             }
+            else if (memcmp(command[0],"clock",5) == 0)
+            {
+                syscall(9,0,0,0);
+            }
             else{
                 put("Command Tidak Valid\n", WHITE);
             }

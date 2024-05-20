@@ -6,6 +6,7 @@
 #include "header/filesystem/fat32.h"
 #include "header/text/framebuffer.h"
 #include "header/stdlib/string.h"
+#include "header/cmos/cmos.h"
 
 void activate_timer_interrupt(void) {
     __asm__ volatile("cli");
@@ -130,6 +131,28 @@ void syscall(struct InterruptFrame frame) {
             framebuffer_clear();
             setZeroLocation();
             framebuffer_set_cursor(0, 0);
+            break;
+        case 9 :
+            while (true)
+            {
+                struct clock c;
+                cmos_read_clock(&c);
+                char front_hour_str = { c.front_hour + '0'};
+                char behind_hour_str = { c.behind_hour + '0'};
+                char front_minute_str = { c.front_minute + '0'};
+                char behind_minute_str = { c.behind_minute + '0'};
+                char front_second_str = { c.front_second + '0'};
+                char behind_second_str = { c.behind_second + '0'};
+                framebuffer_write(24, 72, front_hour_str, 0xFF, 0x00);
+                framebuffer_write(24, 73, behind_hour_str, 0xFF, 0x00);
+                framebuffer_write(24, 74, ':', 0xFF, 0x00);
+                framebuffer_write(24, 75, front_minute_str, 0xFF, 0x00);
+                framebuffer_write(24, 76, behind_minute_str, 0xFF, 0x00);
+                framebuffer_write(24, 77, ':', 0xFF, 0x00);
+                framebuffer_write(24, 78, front_second_str, 0xFF, 0x00);
+                framebuffer_write(24, 79, behind_second_str, 0xFF, 0x00);
+            }
+        
             break;
     }
 }
